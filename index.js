@@ -1,26 +1,23 @@
-// Import the required libraries
-var graphql = require('graphql');
-var graphqlHTTP = require('express-graphql');
-var express = require('express');
+import graphql from 'graphql';
+import graphqlHTTP from 'express-graphql';
+import express from 'express';
+const data = require('./data.json');
 
-// Import the data you created above
-var data = require('./data.json');
-
-// Define the User type with two string fields: `id` and `name`.
-// The type of User is GraphQLObjectType, which has child fields
-// with their own types (in this case, GraphQLString).
-var userType = new graphql.GraphQLObjectType({
+const userType = new graphql.GraphQLObjectType({
   name: 'User',
   fields: {
     id: { type: graphql.GraphQLString },
     name: { type: graphql.GraphQLString },
+    children: {
+      type: new graphql.GraphQLList(graphql.GraphQLString),
+      args: { limit: { type: graphql.GraphQLInt } },
+      resolve: (user, args) => {
+        return user.children;
+      }
+    }
   }
 });
 
-// Define the schema with one top-level field, `user`, that
-// takes an `id` argument and returns the User with that ID.
-// Note that the `query` is a GraphQLObjectType, just like User.
-// The `user` field, however, is a userType, which we defined above.
 var schema = new graphql.GraphQLSchema({
   query: new graphql.GraphQLObjectType({
     name: 'Query',
@@ -31,11 +28,34 @@ var schema = new graphql.GraphQLSchema({
         args: {
           id: { type: graphql.GraphQLString }
         },
-        // The resolve function describes how to "resolve" or fulfill
-        // the incoming query.
-        // In this case we use the `id` argument from above as a key
-        // to get the User from `data`
-        resolve: function(_, args) {
+        resolve: (_, args, context) => {
+          return data[args.id];
+        }
+      }
+    }
+  }),
+  mutation: new graphql.GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+      AddUser: {
+        type: userType,
+        args: {
+          id: { type: graphql.GraphQLString },
+          name: { type: graphql.GraphQLString }
+        },
+        resolve: (_, args) => {
+          data[args.id] = { name: args.name, id: args.id };
+          return data[args.id];
+        }
+      },
+      RemoveUser: {
+        type: userType,
+        args: {
+          id: { type: graphql.GraphQLString },
+          name: { type: graphql.GraphQLString }
+        },
+        resolve: (_, args) => {
+          data[args.id] = { name: args.name, id: args.id };
           return data[args.id];
         }
       }
@@ -43,8 +63,12 @@ var schema = new graphql.GraphQLSchema({
   })
 });
 
+const home = (req, res) => {
+  return res.sendStatus(200);
+}
 express()
-  .use('/graphql', graphqlHTTP({ schema: schema, pretty: true }))
-  .listen(3000);
+  .use('/api/graphql', graphqlHTTP({ schema: schema, graphiql: true, pretty: true, raw: true }))
+  .use('/*', home)
+  .listen(3030);
 
-console.log('GraphQL server running on http://localhost:3000/graphql');
+console.log('GraphQL server running on http://localhost:3030/api/graphql');

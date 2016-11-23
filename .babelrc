@@ -1,0 +1,17 @@
+{
+  "presets": [
+    "es2015",
+    "stage-0"
+  ],
+  "plugins": [
+    [
+      "transform-decorators-legacy"
+    ],
+    [
+      "add-module-exports"
+    ],
+    "typecheck",
+    "syntax-flow",
+    "transform-flow-comments"
+  ]
+}
