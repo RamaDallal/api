@@ -3,7 +3,7 @@ import {
   GraphQLString,
 } from 'graphql';
 
-const data = require('./../../../../../data.json');
+import UserModel from './userModel';
 
 export default {
   user: {
@@ -12,7 +12,7 @@ export default {
       id: { type: GraphQLString }
     },
     async resolve(_, args: Object): Object {
-      return data[args.id];
+      return UserModel.findById(args.id);
     }
   }
 };

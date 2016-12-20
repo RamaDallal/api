@@ -6,18 +6,21 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
-const data = require('./../../../../../data.json');
+import UserModel from './userModel';
 
 export default {
   signup: {
     type: User,
     args: {
-      id: { type: GraphQLString },
-      name: { type: GraphQLString }
+      username: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => {
-      data[args.id] = { name: args.name, id: args.id };
-      return data[args.id];
+      console.log('123');
+      const user = new UserModel();
+      user.username = args.username;
+      user.password = 'xxx';
+      console.log(user);
+      return user.save();
     }
   },
   login: {
@@ -29,17 +32,21 @@ export default {
       }
     }),
     args: {
-      id: { type: GraphQLString },
+      username: { type: GraphQLString },
       password: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => {
-      let res;
-      if (data[args.id] && data[args.id].password === args.password) {
-        res = { user: data[args.id] };
-      } else {
-        res = { errors: ['invalid id,password'] };
-      }
-      return res;
+      return new Promise((resolve, reject) => {
+        UserModel.findOne({ username: args.username, password: args.password }, (err, user) => {
+          let res;
+          if (err) {
+            res = { errors: ['error'] };
+          } else {
+            res = { user };
+          }
+          return resolve(res);
+        });
+      });
     }
   }
 };
