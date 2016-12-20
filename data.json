@@ -1,14 +1,17 @@
 {
   "1": {
     "id": "1",
-    "name": "Dan"
+    "name": "Dan",
+    "password": "Dan"
   },
   "2": {
     "id": "2",
-    "name": "Marie"
+    "name": "Marie",
+    "password": "Marie"
   },
   "3": {
     "id": "3",
-    "name": "Jessie"
+    "name": "Jessie",
+    "password": "Jessie"
   }
 }

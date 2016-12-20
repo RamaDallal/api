@@ -8,6 +8,7 @@ const User = new GraphQLObjectType({
   fields: {
     id: { type: GraphQLString },
     name: { type: GraphQLString },
+    password: { type: GraphQLString },
   }
 });
 export default User;
