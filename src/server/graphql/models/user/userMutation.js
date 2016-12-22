@@ -24,8 +24,6 @@ export default {
       const user = new UserModel();
       user.username = args.username;
       user.password = hash;
-      console.log(user);
-      console.log(hash);
       return user.save();
     }
   },
