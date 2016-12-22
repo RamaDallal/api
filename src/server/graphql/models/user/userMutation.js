@@ -52,7 +52,6 @@ export default {
           } else {
             const token = jwt.sign({id: user.id, username: user.username}, 'super_secret');
             const decoded = jwt.verify(token, 'super_secret');
-            console.log(decoded);
             res = {
               user: user,
               token: token
