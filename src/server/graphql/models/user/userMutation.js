@@ -8,6 +8,7 @@ import {
 } from 'graphql';
 
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 
 export default {
@@ -31,7 +32,8 @@ export default {
       name: 'CreateUserResult',
       fields: {
         errors: { type: new List(StringType) },
-        user: { type: User }
+        user: { type: User },
+        token: { type: GraphQLString }
       }
     }),
     args: {
@@ -44,11 +46,16 @@ export default {
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
-            res = { errors: ['Invalid password'] };
+            res = {errors: ['Invalid password']};
           } else if (passwordError) {
-            res = { errors: [passwordError] };
+            res = {errors: [passwordError]};
           } else {
-            res = { user };
+            const token = jwt.sign({id: user.id, username: user.username}, 'super_secret');
+            const decoded = jwt.verify(token, 'super_secret');
+            res = {
+              user: user,
+              token: token
+            };
           }
           return resolve(res);
         });
