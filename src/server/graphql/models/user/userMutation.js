@@ -54,7 +54,7 @@ export default {
             const decoded = jwt.verify(token, 'super_secret');
             console.log(decoded);
             res = {
-              user: {id: user.id, username: user.username},
+              user: user,
               token: token
             };
           }
