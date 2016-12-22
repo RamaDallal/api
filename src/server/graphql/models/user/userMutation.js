@@ -1,4 +1,5 @@
 import User from './userSchema';
+import UserModel from './userModel';
 import {
   GraphQLString,
   GraphQLList as List,
@@ -6,20 +7,25 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
-import UserModel from './userModel';
+import bcrypt from 'bcryptjs';
+
 
 export default {
   signup: {
     type: User,
     args: {
-      username: { type: GraphQLString }
+      username: { type: GraphQLString },
+      password: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => {
       console.log('123');
+      var salt = bcrypt.genSaltSync(10);
+      var hash = bcrypt.hashSync(args.password, salt);
       const user = new UserModel();
       user.username = args.username;
-      user.password = 'xxx';
+      user.password = hash;
       console.log(user);
+      console.log(hash );
       return user.save();
     }
   },
@@ -28,7 +34,7 @@ export default {
       name: 'CreateUserResult',
       fields: {
         errors: { type: new List(StringType) },
-        user: { type: User },
+        user: { type: User }
       }
     }),
     args: {

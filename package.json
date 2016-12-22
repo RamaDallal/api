@@ -5,10 +5,9 @@
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=development node ./src/server/server.babel.js",
+    "start": "node ./src/server/server.babel.js",
     "build": "`npm bin`/babel ./src/main.js --out-file build/main.js --source-maps",
-    "lint": "eslint -c .eslintrc src",
-    "postinstall": "bash .prepare"
+    "lint": "eslint -c .eslintrc src"
   },
   "repository": {
     "type": "git",
@@ -18,6 +17,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/pazar/api#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.0",
     "express": "^4.13.4",
     "express-graphql": "^0.5.4",
     "graphql": "^0.7.0",
