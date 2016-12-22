@@ -14,10 +14,10 @@ export default {
   signup: {
     type: User,
     args: {
-      username: {type: GraphQLString},
-      password: {type: GraphQLString}
+      username: { type: GraphQLString },
+      password: { type: GraphQLString }
     },
-    resolve: (_, args:Object):Object => {
+    resolve: (_, args: Object): Object => {
       console.log('123');
       var salt = bcrypt.genSaltSync(10);
       var hash = bcrypt.hashSync(args.password, salt);
@@ -33,32 +33,32 @@ export default {
     type: new ObjectType({
       name: 'CreateUserResult',
       fields: {
-        errors: {type: new List(StringType)},
-        user: {type: User}
+        errors: { type: new List(StringType) },
+        user: { type: User }
       }
     }),
     args: {
-      username: {type: GraphQLString},
-      password: {type: GraphQLString}
+      username: { type: GraphQLString },
+      password: { type: GraphQLString }
     },
-    resolve: (_, args:Object):Object => {
+    resolve: (_, args: Object): Object => {
       return new Promise((resolve, reject) => {
-        UserModel.findOne({username: args.username}, (err, user) => {
+        UserModel.findOne({ username: args.username }, (err, user) => {
           if (!user) {
             console.log('x');
           } else {
             console.log('2');
-            bcrypt.compare(args.password, user.password, function (err, result) {
+            bcrypt.compare(args.password, user.password, function(err, result) {
               console.log('3');
               console.log(user.password);
               let res;
               if (!result) {
-                res = {errors: ['error']};
+                res = { errors: ['error'] };
                 console.log('error');
               } else {
                 console.log('5');
                 console.log('success');
-                res = {user};
+                res = { user };
               }
               return resolve(res);
             });
