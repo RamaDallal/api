@@ -14,10 +14,10 @@ export default {
   signup: {
     type: User,
     args: {
-      username: { type: GraphQLString },
-      password: { type: GraphQLString }
+      username: {type: GraphQLString},
+      password: {type: GraphQLString}
     },
-    resolve: (_, args: Object): Object => {
+    resolve: (_, args:Object):Object => {
       console.log('123');
       var salt = bcrypt.genSaltSync(10);
       var hash = bcrypt.hashSync(args.password, salt);
@@ -25,7 +25,7 @@ export default {
       user.username = args.username;
       user.password = hash;
       console.log(user);
-      console.log(hash );
+      console.log(hash);
       return user.save();
     }
   },
@@ -33,24 +33,36 @@ export default {
     type: new ObjectType({
       name: 'CreateUserResult',
       fields: {
-        errors: { type: new List(StringType) },
-        user: { type: User }
+        errors: {type: new List(StringType)},
+        user: {type: User}
       }
     }),
     args: {
-      username: { type: GraphQLString },
-      password: { type: GraphQLString }
+      username: {type: GraphQLString},
+      password: {type: GraphQLString}
     },
-    resolve: (_, args: Object): Object => {
+    resolve: (_, args:Object):Object => {
       return new Promise((resolve, reject) => {
-        UserModel.findOne({ username: args.username, password: args.password }, (err, user) => {
-          let res;
-          if (err) {
-            res = { errors: ['error'] };
+        UserModel.findOne({username: args.username}, (err, user) => {
+          if (!user) {
+            console.log('x');
           } else {
-            res = { user };
+            console.log('2');
+            bcrypt.compare(args.password, user.password, function (err, result) {
+              console.log('3');
+              console.log(user.password);
+              let res;
+              if (!result) {
+                res = {errors: ['error']};
+                console.log('error');
+              } else {
+                console.log('5');
+                console.log('success');
+                res = {user};
+              }
+              return resolve(res);
+            });
           }
-          return resolve(res);
         });
       });
     }
