@@ -41,19 +41,19 @@ export default {
     },
     resolve: (_, args: Object): Object => {
       return new Promise((resolve, reject) => {
-        UserModel.findOne({ username: args.username }, (err, user) => {
-          if (!user) {
-          } else {
-            bcrypt.compare(args.password, user.password, function(err, result) {
-              let res;
-              if (!result) {
-                res = { errors: ['error'] };
-              } else {
-                res = { user };
-              }
-              return resolve(res);
-            });
-          }
+        UserModel.findOne({ username: args.username }, (usernameError, user) => {
+          if (usernameError || !usernameError) return resolve({ errors: ['invalid username'] });
+          bcrypt.compare(args.password, user.password, (passwordError, result) => {
+            let res;
+            if (!result) {
+              res = { errors: ['Invalid password'] };
+            } else if (passwordError) {
+              res = { errors: [passwordError] };
+            } else {
+              res = { user };
+            }
+            return resolve(res);
+          });
         });
       });
     }
