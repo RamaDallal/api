@@ -46,15 +46,14 @@ export default {
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
-            res = {errors: ['Invalid password']};
+            res = { errors: ['Invalid password'] };
           } else if (passwordError) {
-            res = {errors: [passwordError]};
+            res = { errors: [passwordError] };
           } else {
-            const token = jwt.sign({id: user.id, username: user.username}, 'super_secret');
-            const decoded = jwt.verify(token, 'super_secret');
+            const token = jwt.sign({ id: user.id, username: user.username }, 'super_secret');
             res = {
-              user: user,
-              token: token
+              user,
+              token,
             };
           }
           return resolve(res);
