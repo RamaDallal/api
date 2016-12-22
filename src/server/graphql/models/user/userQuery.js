@@ -1,4 +1,4 @@
-import  User from './userSchema';
+import User from './userSchema';
 import {
   GraphQLString,
 } from 'graphql';
