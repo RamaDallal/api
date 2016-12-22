@@ -43,7 +43,7 @@ export default {
       return new Promise((resolve, reject) => {
         UserModel.findOne({ username: args.username }, (usernameError, user) => {
           if (usernameError || !usernameError) return resolve({ errors: ['invalid username'] });
-          bcrypt.compare(args.password, user.password, (passwordError, result) => {
+          return bcrypt.compare(args.password, user.password, (passwordError, result) => {
             let res;
             if (!result) {
               res = { errors: ['Invalid password'] };
