@@ -24,8 +24,6 @@ export default {
       const user = new UserModel();
       user.username = args.username;
       user.password = hash;
-      console.log(user);
-      console.log(hash );
       return user.save();
     }
   },
@@ -43,14 +41,19 @@ export default {
     },
     resolve: (_, args: Object): Object => {
       return new Promise((resolve, reject) => {
-        UserModel.findOne({ username: args.username, password: args.password }, (err, user) => {
-          let res;
-          if (err) {
-            res = { errors: ['error'] };
-          } else {
-            res = { user };
-          }
-          return resolve(res);
+        UserModel.findOne({ username: args.username }, (usernameError, user) => {
+          if (usernameError || !usernameError) return resolve({ errors: ['invalid username'] });
+          return bcrypt.compare(args.password, user.password, (passwordError, result) => {
+            let res;
+            if (!result) {
+              res = { errors: ['Invalid password'] };
+            } else if (passwordError) {
+              res = { errors: [passwordError] };
+            } else {
+              res = { user };
+            }
+            return resolve(res);
+          });
         });
       });
     }
