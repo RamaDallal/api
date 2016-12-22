@@ -43,19 +43,12 @@ export default {
       return new Promise((resolve, reject) => {
         UserModel.findOne({ username: args.username }, (err, user) => {
           if (!user) {
-            console.log('x');
           } else {
-            console.log('2');
             bcrypt.compare(args.password, user.password, function(err, result) {
-              console.log('3');
-              console.log(user.password);
               let res;
               if (!result) {
                 res = { errors: ['error'] };
-                console.log('error');
               } else {
-                console.log('5');
-                console.log('success');
                 res = { user };
               }
               return resolve(res);
