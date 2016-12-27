@@ -10,8 +10,7 @@ export default {
   user: {
     type: User,
     async resolve(_, args: Object, ctx): Object {
-      console.log(ctx.headers.authorization);
-      const { id } = jwt.verify(ctx.headers.authorization, 'super_secret');
+      const { id } = ctx.headers.authorization ? jwt.verify(ctx.headers.authorization, 'super_secret') : { id: null };
       return UserModel.findById(id);
     }
   }
