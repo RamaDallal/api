@@ -50,7 +50,7 @@ export default {
           } else if (passwordError) {
             res = { errors: [passwordError] };
           } else {
-            const token = jwt.sign({ id: user.id, username: user.username }, 'super_secret');
+            const token = jwt.sign({ id: user.id }, 'super_secret');
             res = {
               user,
               token,

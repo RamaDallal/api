@@ -4,15 +4,15 @@ import {
 } from 'graphql';
 
 import UserModel from './userModel';
+import jwt from 'jsonwebtoken';
 
 export default {
   user: {
     type: User,
-    args: {
-      id: { type: GraphQLString }
-    },
-    async resolve(_, args: Object): Object {
-      return UserModel.findById(args.id);
+    async resolve(_, args: Object, ctx): Object {
+      console.log(ctx.headers.authorization);
+      const { id } = jwt.verify(ctx.headers.authorization, 'super_secret');
+      return UserModel.findById(id);
     }
   }
 };
