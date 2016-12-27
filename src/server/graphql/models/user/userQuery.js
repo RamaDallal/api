@@ -3,7 +3,7 @@ import {
   GraphQLString,
 } from 'graphql';
 
-import UserModel from './userModel';
+import UserModel from './UserModel';
 
 export default {
   user: {
