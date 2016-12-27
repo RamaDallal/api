@@ -17,4 +17,4 @@ setupDB(config.db);
 express()
   .use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }))
   .use('/*', home)
-  .listen(3030);
+  .listen(process.env.PORT || 3030);
