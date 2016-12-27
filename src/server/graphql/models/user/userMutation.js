@@ -1,5 +1,5 @@
 import User from './userSchema';
-import UserModel from './userModel';
+import UserModel from './UserModel';
 import {
   GraphQLString,
   GraphQLList as List,
