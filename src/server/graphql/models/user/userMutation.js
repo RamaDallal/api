@@ -1,5 +1,5 @@
 import User from './userSchema';
-import UserModel from './userModel';
+import UserModel from './UserModel';
 import {
   GraphQLString,
   GraphQLList as List,
@@ -9,7 +9,6 @@ import {
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
 
 export default {
   signup: {

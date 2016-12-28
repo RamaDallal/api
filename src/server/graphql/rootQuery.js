@@ -1,7 +1,7 @@
 import {
   GraphQLObjectType
 } from 'graphql';
-import user from './models/User/userQuery';
+import user from './models/user/userQuery';
 
 const rootFields = Object.assign(user);
 

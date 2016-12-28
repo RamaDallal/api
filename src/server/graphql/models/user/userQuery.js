@@ -3,9 +3,9 @@ import {
   GraphQLString,
 } from 'graphql';
 
-import UserModel from './userModel';
 import jwt from 'jsonwebtoken';
 import isEmpty from 'lodash/isEmpty';
+import UserModel from './UserModel';
 
 export default {
   user: {
