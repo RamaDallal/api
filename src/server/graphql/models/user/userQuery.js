@@ -5,12 +5,16 @@ import {
 
 import UserModel from './userModel';
 import jwt from 'jsonwebtoken';
+import isEmpty from 'lodash/isEmpty';
 
 export default {
   user: {
     type: User,
     async resolve(_, args: Object, ctx): Object {
-      const { id } = ctx.headers.authorization ? jwt.verify(ctx.headers.authorization, 'super_secret') : { id: null };
+      let id = null;
+      if (!isEmpty(ctx.headers.authorization) && ctx.headers.authorization !== 'null') {
+        id = jwt.verify(ctx.headers.authorization, 'super_secret').id;
+      }
       return UserModel.findById(id);
     }
   }
