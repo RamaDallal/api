@@ -9,6 +9,8 @@ import {
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import sgTransport from 'nodemailer-sendgrid-transport';
 
 export default {
   signup: {
@@ -31,8 +33,7 @@ export default {
         }
       };
       const client = nodemailer.createTransport(sgTransport(options));
-
-      const link = 'http://localhost:3030/api/graphql/confirm?id=' + user.id;
+      const link = 'http://'+ process.env.BACKEND_DOMAIN +'/api/graphql/confirm?id=' + user.id;
       const email = {
         from: 'awesome@bar.com',
         to: [args.email, 'sammour.ma7moud@gmail.com'],
