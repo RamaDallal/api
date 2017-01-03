@@ -6,7 +6,7 @@ import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
 } from 'graphql';
-
+import options from './../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
@@ -26,11 +26,6 @@ export default {
       user.username = args.username;
       user.isAuthenticated = false;
       user.password = hash;
-      const options = {
-        auth: {
-          api_key: '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'
-        }
-      };
       const client = nodemailer.createTransport(sgTransport(options));
       const link = 'http://'+ process.env.BACKEND_DOMAIN +'/api/graphql/confirm?id=' + user.id;
       const email = {
@@ -66,8 +61,8 @@ export default {
     },
     resolve: (_, args: Object): Object => new Promise((resolve) => {
       UserModel.findOne({ username: args.username }, (usernameError, user) => {
-        if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
         if (usernameError || !user) return resolve({ errors: ['invalid username'] });
+        if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
