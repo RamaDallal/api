@@ -6,7 +6,7 @@ import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
 } from 'graphql';
-
+import options from './../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
@@ -66,8 +66,9 @@ export default {
       password: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => new Promise((resolve) => {
-      UserModel.findOne({ email: args.email }, (emailError, user) => {
-        if (emailError || !user) return resolve({ errors: ['invalid email'] });
+      UserModel.findOne({ username: args.username }, (usernameError, user) => {
+        if (usernameError || !user) return resolve({ errors: ['invalid username'] });
+        if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
