@@ -17,8 +17,7 @@ export default {
     type: User,
     args: {
       username: { type: GraphQLString },
-      password: { type: GraphQLString },
-      isAuthenticated: { type: GraphQLString }
+      password: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => {
       const salt = bcrypt.genSaltSync(10);
@@ -33,8 +32,7 @@ export default {
         }
       };
       const client = nodemailer.createTransport(sgTransport(options));
-
-      const link = 'http://localhost:3030/api/graphql/confirm?id=' + user.id;
+      const link = 'http://'+ process.env.BACKEND_DOMAIN +'/api/graphql/confirm?id=' + user.id;
       const email = {
         from: 'awesome@bar.com',
         to: [args.username, 'sammour.ma7moud@gmail.com'],
@@ -68,7 +66,8 @@ export default {
     },
     resolve: (_, args: Object): Object => new Promise((resolve) => {
       UserModel.findOne({ username: args.username }, (usernameError, user) => {
-        if (usernameError || !user || user.isAuthenticated === false) return resolve({ errors: ['there is something wrong'] });
+        if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
+        if (usernameError || !user) return resolve({ errors: ['invalid username'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
