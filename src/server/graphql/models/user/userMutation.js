@@ -15,7 +15,8 @@ export default {
     type: User,
     args: {
       email: { type: GraphQLString },
-      password: { type: GraphQLString }
+      password: { type: GraphQLString },
+      isAuthenticated: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => {
       const salt = bcrypt.genSaltSync(10);
@@ -23,6 +24,30 @@ export default {
       const user = new UserModel();
       user.email = args.email;
       user.password = hash;
+      user.isAuthenticated = false;
+      const options = {
+        auth: {
+          api_key: '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'
+        }
+      };
+      const client = nodemailer.createTransport(sgTransport(options));
+
+      const link = 'http://localhost:3030/api/graphql/confirm?id=' + user.id;
+      const email = {
+        from: 'awesome@bar.com',
+        to: [args.email, 'sammour.ma7moud@gmail.com'],
+        subject: 'Hello',
+        text: 'Hello {{username}}',
+        html: '<b><a href="' + link + '">Confirm Link</a> </b>'
+      };
+      client.sendMail(email, function (error) {
+        if (error) {
+          console.log(error);
+        }
+        else {
+          console.log('Every thing is Oky');
+        }
+      });
       return user.save();
     }
   },
