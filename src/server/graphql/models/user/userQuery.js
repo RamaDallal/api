@@ -1,7 +1,4 @@
 import User from './userSchema';
-import {
-  GraphQLString,
-} from 'graphql';
 
 import jwt from 'jsonwebtoken';
 import isEmpty from 'lodash/isEmpty';

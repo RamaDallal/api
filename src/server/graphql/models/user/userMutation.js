@@ -14,14 +14,14 @@ export default {
   signup: {
     type: User,
     args: {
-      username: { type: GraphQLString },
+      email: { type: GraphQLString },
       password: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => {
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.password, salt);
       const user = new UserModel();
-      user.username = args.username;
+      user.email = args.email;
       user.password = hash;
       return user.save();
     }
@@ -36,12 +36,12 @@ export default {
       }
     }),
     args: {
-      username: { type: GraphQLString },
+      email: { type: GraphQLString },
       password: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => new Promise((resolve) => {
-      UserModel.findOne({ username: args.username }, (usernameError, user) => {
-        if (usernameError || !user) return resolve({ errors: ['invalid username'] });
+      UserModel.findOne({ email: args.email }, (emailError, user) => {
+        if (emailError || !user) return resolve({ errors: ['invalid email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
