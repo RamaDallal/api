@@ -6,7 +6,7 @@ import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
 } from 'graphql';
-import options from './../../../config.js';
+import config from '../../../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
@@ -26,8 +26,8 @@ export default {
       user.username = args.username;
       user.isAuthenticated = false;
       user.password = hash;
-      const client = nodemailer.createTransport(sgTransport(options));
-      const link = 'http://'+ process.env.BACKEND_DOMAIN +'/api/graphql/confirm?id=' + user.id;
+      const client = nodemailer.createTransport(sgTransport(config.options));
+      const link = 'http://' + config.apiHost + ':' + config.apiPort + '/api/graphql/confirm?id=' + user.id;
       const email = {
         from: 'awesome@bar.com',
         to: [args.username, 'sammour.ma7moud@gmail.com'],
