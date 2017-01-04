@@ -27,22 +27,21 @@ export default {
       user.username = args.username;
       user.isAuthenticated = false;
       user.password = hash;
-      const client = nodemailer.createTransport(sgTransport(config.options));
+      const nodeMailerOptions = {
+        options: {
+          auth: {
+            api_key: config.nodeMailer.auth.api_key
+          }
+        }
+      };
+      const client = nodemailer.createTransport(sgTransport(config.nodeMailer));
       const link = 'http://' + config.apiHost + ':' + config.apiPort + '/api/graphql/confirm?id=' + user.id;
-      client.use('compile', hbs({
-          viewPath: './views/email',
-          extName: '.hbs'
-        })
-      );
       const email = {
         from: 'awesome@bar.com',
         to: [args.username, 'sammour.ma7moud@gmail.com'],
         subject: 'Hello',
         text: 'Hello {{username}}',
-        template: 'template',
-        context: {
-          variable1 : '<b><a href="' + link + '">Confirm Link</a> </b>',
-        }
+        html: '<b><a href="' + link + '">Confirm Link</a> </b>',
       };
       client.sendMail(email, function (error) {
         if (error) {

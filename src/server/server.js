@@ -10,7 +10,6 @@ import setupDB from './database/setupDB';
 import config from './../../config';
 const cors = require('cors');
 import User from './graphql/models/user/UserModel';
-import exphbs from 'express-handlebars';
 
 const home = (req: Object, res: Object): Object => res.sendStatus(200);
 
@@ -28,8 +27,6 @@ express()
       }
     });
   })
-  .engine('handlebars', exphbs({defaultLayout: 'template'}))
-  .set('view engine', 'handlebars')
   .use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }))
   .use('/*', home)
   .listen(process.env.PORT || 3030);
