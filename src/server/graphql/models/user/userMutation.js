@@ -34,12 +34,15 @@ export default {
         }
       };
       const client = nodemailer.createTransport(sgTransport(config.options));
+      const nodeMailerOptions = {
+        options: {
+          auth: {
+            api_key: config.nodeMailer.auth.api_key
+          }
+        }
+      };
+      const client = nodemailer.createTransport(sgTransport(config.nodeMailer));
       const link = 'http://' + config.apiHost + ':' + config.apiPort + '/api/graphql/confirm?id=' + user.id;
-      client.use('compile', hbs({
-          viewPath: './views/email',
-          extName: '.hbs'
-        })
-      );
       const email = {
         from: 'awesome@bar.com',
         to: [args.email, 'sammour.ma7moud@gmail.com'],
