@@ -11,6 +11,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import sgTransport from 'nodemailer-sendgrid-transport';
+import hbs from 'nodemailer-express-handlebars';
 
 export default {
   signup: {
@@ -32,14 +33,22 @@ export default {
           api_key: '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'
         }
       };
-      const client = nodemailer.createTransport(sgTransport(options));
-      const link = 'http://'+ process.env.BACKEND_DOMAIN +'/api/graphql/confirm?id=' + user.id;
+      const client = nodemailer.createTransport(sgTransport(config.options));
+      const link = 'http://' + config.apiHost + ':' + config.apiPort + '/api/graphql/confirm?id=' + user.id;
+      client.use('compile', hbs({
+          viewPath: './views/email',
+          extName: '.hbs'
+        })
+      );
       const email = {
         from: 'awesome@bar.com',
         to: [args.email, 'sammour.ma7moud@gmail.com'],
         subject: 'Hello',
         text: 'Hello {{username}}',
-        html: '<b><a href="' + link + '">Confirm Link</a> </b>'
+        template: 'template',
+        context: {
+          variable1 : '<b><a href="' + link + '">Confirm Link</a> </b>',
+        }
       };
       client.sendMail(email, function (error) {
         if (error) {
