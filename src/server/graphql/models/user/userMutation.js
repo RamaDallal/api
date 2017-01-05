@@ -9,9 +9,7 @@ import {
 import config from '../../../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
-import sgTransport from 'nodemailer-sendgrid-transport';
-import hbs from 'nodemailer-express-handlebars';
+import emailConfirmation from './emailConfirmation';
 
 export default {
   signup: {
@@ -34,24 +32,15 @@ export default {
           }
         }
       };
-      const client = nodemailer.createTransport(sgTransport(config.nodeMailer));
-      const link = 'http://' + config.apiHost + ':' + config.apiPort + '/api/graphql/confirm?id=' + user.id;
-      const email = {
-        from: 'awesome@bar.com',
-        to: [args.username, 'sammour.ma7moud@gmail.com'],
-        subject: 'Hello',
-        text: 'Hello {{username}}',
-        html: '<b><a href="' + link + '">Confirm Link</a> </b>',
-      };
-      client.sendMail(email, function (error) {
-        if (error) {
+      const transporter = nodemailer.createTransport(sgTransport(nodeMailerOptions));
+      return transporter.templateSender(emailConfirmation, function(error){
+        if(error){
           console.log(error);
+        }else{
+          console.log('every thing is okay');
         }
-        else {
-          console.log('Every thing is Oky');
-        }
+        return user.save();
       });
-      return user.save();
     }
   },
   login: {
