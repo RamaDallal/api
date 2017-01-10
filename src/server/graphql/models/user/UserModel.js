@@ -11,7 +11,7 @@ userSchema.pre("save", function (next) {
   mongoose.models["User"].findOne({email: user.email}, 'email', function (err, results) {
     if (results) {
       user.invalidate("email");
-      next(new Error("User Email must be unique, another one take this username"))
+      next(new Error("User Email must be unique, another one take this email"))
     } else {
       next()
     }
