@@ -6,16 +6,20 @@ import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
 } from 'graphql';
-
+import config from '../../../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import sgTransport from 'nodemailer-sendgrid-transport';
+import hbs from 'nodemailer-express-handlebars';
 
 export default {
   signup: {
     type: User,
     args: {
       email: { type: GraphQLString },
-      password: { type: GraphQLString }
+      password: { type: GraphQLString },
+      isAuthenticated: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => {
       const salt = bcrypt.genSaltSync(10);
@@ -23,6 +27,40 @@ export default {
       const user = new UserModel();
       user.email = args.email;
       user.password = hash;
+      user.isAuthenticated = false;
+      const options = {
+        auth: {
+          api_key: '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'
+        }
+      };
+      const client = nodemailer.createTransport(sgTransport(config.options));
+      const nodeMailerOptions = {
+        options: {
+          auth: {
+            api_key: config.nodeMailer.auth.api_key
+          }
+        }
+      };
+      const client = nodemailer.createTransport(sgTransport(config.nodeMailer));
+      const link = 'http://' + config.apiHost + ':' + config.apiPort + '/api/graphql/confirm?id=' + user.id;
+      const email = {
+        from: 'awesome@bar.com',
+        to: [args.email, 'sammour.ma7moud@gmail.com'],
+        subject: 'Hello',
+        text: 'Hello {{username}}',
+        template: 'template',
+        context: {
+          variable1 : '<b><a href="' + link + '">Confirm Link</a> </b>',
+        }
+      };
+      client.sendMail(email, function (error) {
+        if (error) {
+          console.log(error);
+        }
+        else {
+          console.log('Every thing is Oky');
+        }
+      });
       return user.save();
     }
   },
@@ -40,8 +78,9 @@ export default {
       password: { type: GraphQLString }
     },
     resolve: (_, args: Object): Object => new Promise((resolve) => {
-      UserModel.findOne({ email: args.email }, (emailError, user) => {
-        if (emailError || !user) return resolve({ errors: ['invalid email'] });
+      UserModel.findOne({ username: args.username }, (usernameError, user) => {
+        if (usernameError || !user) return resolve({ errors: ['invalid username'] });
+        if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
