@@ -24,3 +24,14 @@ export const signUpConfirmEmail = (user, callback) => {
     subject: 'Signup Confirmation Email'
   }, { email, link }, callback);
 }
+export const forgottenPasswordEmail = (user, callback) => {
+  const { email } = user;
+  var link = 'http://' + config.apiHost + ':' + config.apiPort + '/password/reset?username=' + user.token;
+  const sendPwdReminder = transporter.templateSender(new EmailTemplate('src/server/email-service/template/forgotten-password'), {
+    from: 'sender@example.com',
+  });
+  sendPwdReminder({
+    to: email,
+    subject: 'Forgotten Password Email'
+  }, { email, link }, callback);
+}
