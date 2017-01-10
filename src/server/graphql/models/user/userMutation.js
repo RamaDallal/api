@@ -8,7 +8,7 @@ import {
 } from 'graphql';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {signUpConfirmEmail} from '../../../email-service/emailService';
+import {signUpConfirmEmail, forgottenPasswordEmail} from '../../../email-service/emailService';
 
 export default {
   signup: {
@@ -115,6 +115,31 @@ export default {
               };
               return resolve(res);
             });
+          }
+        });
+      });
+    })
+  },
+  forgotten: {
+    type: new ObjectType({
+      name: 'ForgottenPasswordResult',
+      fields: {
+        errors: { type: new List(StringType) },
+        user: { type: User },
+        token: { type: GraphQLString }
+      }
+    }),
+    args: {
+      email: { type: GraphQLString }
+    },
+    resolve: (_, args:Object):Object => new Promise((resolve) => {
+      UserModel.findOne({ email: args.email }, function(emailError, user) {
+        if (emailError || !user) return resolve({ errors: ['invalid email'] });
+        forgottenPasswordEmail(user, (err) => {
+          if (err) {
+            console.log('error')
+          } else {
+            resolve({ errors: [err] });
           }
         });
       });
