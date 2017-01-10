@@ -60,13 +60,12 @@ export default {
       });
     })
   },
-  change: {
+  changePassword: {
     type: new ObjectType({
       name: 'ChangePasswordResult',
       fields: {
         errors: { type: new List(StringType) },
-        user: { type: User },
-        token: { type: GraphQLString }
+        user: { type: User }
       }
     }),
     args: {
@@ -75,20 +74,10 @@ export default {
       token: { type: GraphQLString }
     },
     resolve: (_, args:Object):Object => new Promise((resolve) => {
-      console.log('1');
       var decoded = jwt.decode(args.token, 'super_secret');
-      console.log('2');
-      console.log(decoded);
-      console.log('3');
       const salt = bcrypt.genSaltSync(10);
-      console.log('4');
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      console.log('5');
       UserModel.findOne({ _id: decoded.id }, function (err, user) {
-        console.log('8');
-        console.log('9');
-        console.log(user.password);
-        console.log(args.password);
         return bcrypt.compare(args.password, user.password,(passwordError, result) => {
           let res;
           if (!result) {
@@ -96,7 +85,6 @@ export default {
           } else if (passwordError) {
             res = { errors: [passwordError] };
           } else  {
-            console.log('10');
             UserModel.update({
               _id: decoded.id
             }, {password: hash}, function () {
