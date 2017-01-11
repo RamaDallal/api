@@ -141,7 +141,7 @@ export default {
           if (err) {
             console.log('error')
           } else {
-            resolve({ errors: [err] });
+            resolve({ user: [user] });
           }
         });
       });
