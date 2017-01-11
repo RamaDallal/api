@@ -161,7 +161,6 @@ export default {
       var decoded = jwt.decode(args.token, config.jwt.secretKey);
       bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hashSync(args.newPassword, salt, function(result, passwordError) {
-          user.newpassword = hash;
           let res;
           if (!result) {
             res = { errors: ['Invalid password'] };
