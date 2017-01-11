@@ -6,6 +6,7 @@ import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
 } from 'graphql';
+import config from '../../../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {signUpConfirmEmail, forgottenPasswordEmail} from '../../../email-service/emailService';
@@ -25,7 +26,7 @@ export default {
       password: { type: GraphQLString },
       isAuthenticated: { type: GraphQLString }
     },
-    resolve: (_, args: Object): Object => new Promise((resolve) => {
+    resolve: (_, args:Object):Object => new Promise((resolve) => {
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.password, salt);
       const user = new UserModel();
@@ -60,7 +61,7 @@ export default {
       email: { type: GraphQLString },
       password: { type: GraphQLString }
     },
-    resolve: (_, args: Object): Object => new Promise((resolve) => {
+    resolve: (_, args:Object):Object => new Promise((resolve) => {
       UserModel.findOne({ username: args.username }, (usernameError, user) => {
         if (usernameError || !user) return resolve({ errors: ['invalid username'] });
         if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
@@ -71,7 +72,7 @@ export default {
           } else if (passwordError) {
             res = { errors: [passwordError] };
           } else {
-            const token = jwt.sign({ id: user.id }, 'super_secret');
+            const token = jwt.sign({ id: user.id }, config.jwt.secretKey);
             res = {
               user,
               token
@@ -96,20 +97,20 @@ export default {
       token: { type: GraphQLString }
     },
     resolve: (_, args:Object):Object => new Promise((resolve) => {
-      var decoded = jwt.decode(args.token, 'super_secret');
+      var decoded = jwt.decode(args.token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      UserModel.findOne({ _id: decoded.id }, function (err, user) {
-        return bcrypt.compare(args.password, user.password,(passwordError, result) => {
+      UserModel.findOne({ _id: decoded.id }, function(err, user) {
+        return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
             res = { errors: ['Invalid password'] };
           } else if (passwordError) {
             res = { errors: [passwordError] };
-          } else  {
+          } else {
             UserModel.update({
               _id: decoded.id
-            }, {password: hash}, function () {
+            }, { password: hash }, function() {
               res = {
                 user
               };
@@ -120,13 +121,12 @@ export default {
       });
     })
   },
-  forgotten: {
+  forgottenPassword: {
     type: new ObjectType({
       name: 'ForgottenPasswordResult',
       fields: {
         errors: { type: new List(StringType) },
-        user: { type: User },
-        token: { type: GraphQLString }
+        user: { type: User }
       }
     }),
     args: {
@@ -144,5 +144,40 @@ export default {
         });
       });
     })
+  },
+  resetPassword: {
+    type: new ObjectType({
+      name: 'ResetPasswordResult',
+      fields: {
+        errors: { type: new List(StringType) },
+        user: { type: User }
+      }
+    }),
+    args: {
+      email: { type: GraphQLString },
+      newPassword: { type: GraphQLString }
+    },
+    resolve: (_, args:Object):Object => new Promise((resolve) => {
+      var decoded = jwt.decode(args.token, config.jwt.secretKey);
+      bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hashSync(args.newPassword, salt, function(result, passwordError) {
+          let res;
+          if (!result) {
+            res = { errors: ['Invalid password'] };
+          } else if (passwordError) {
+            res = { errors: [passwordError] };
+          } else {
+            UserModel.update({
+              username: decoded.username
+            }, { password: hash }, function() {
+              res = {
+                user
+              };
+              return resolve(res);
+            });
+          }
+        })
+      })
+    })
   }
-};
+}
