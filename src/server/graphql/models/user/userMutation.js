@@ -6,6 +6,7 @@ import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
 } from 'graphql';
+import config from '../../../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {signUpConfirmEmail, forgottenPasswordEmail} from '../../../email-service/emailService';
@@ -71,7 +72,7 @@ export default {
           } else if (passwordError) {
             res = { errors: [passwordError] };
           } else {
-            const token = jwt.sign({ id: user.id }, 'super_secret');
+            const token = jwt.sign({ id: user.id }, config.jwt.secretKey);
             res = {
               user,
               token
@@ -96,7 +97,7 @@ export default {
       token: { type: GraphQLString }
     },
     resolve: (_, args:Object):Object => new Promise((resolve) => {
-      var decoded = jwt.decode(args.token, 'super_secret');
+      var decoded = jwt.decode(args.token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
       UserModel.findOne({ _id: decoded.id }, function(err, user) {
@@ -157,7 +158,7 @@ export default {
       newPassword: { type: GraphQLString }
     },
     resolve: (_, args:Object):Object => new Promise((resolve) => {
-      var decoded = jwt.decode(args.token, 'super_secret');
+      var decoded = jwt.decode(args.token, config.jwt.secretKey);
       bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hashSync(args.newPassword, salt, function(result, passwordError) {
           user.newpassword = hash;
