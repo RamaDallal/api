@@ -94,10 +94,10 @@ export default {
     args: {
       password: { type: GraphQLString },
       newPassword: { type: GraphQLString },
-      token: { type: GraphQLString }
     },
-    resolve: (_, args:Object):Object => new Promise((resolve) => {
-      var decoded = jwt.decode(args.token, config.jwt.secretKey);
+    resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
+      const token = context.headers.authorization;
+      var decoded = jwt.decode(token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
       UserModel.findOne({ _id: decoded.id }, function(err, user) {
@@ -105,8 +105,10 @@ export default {
           let res;
           if (!result) {
             res = { errors: ['Invalid password'] };
+            return resolve(res);
           } else if (passwordError) {
             res = { errors: [passwordError] };
+            return resolve(res);
           } else {
             UserModel.update({
               _id: decoded.id
