@@ -62,8 +62,8 @@ export default {
       password: { type: GraphQLString }
     },
     resolve: (_, args:Object):Object => new Promise((resolve) => {
-      UserModel.findOne({ username: args.username }, (usernameError, user) => {
-        if (usernameError || !user) return resolve({ errors: ['invalid username'] });
+      UserModel.findOne({ email: args.email }, (emailError, user) => {
+        if (emailError || !user) return resolve({ errors: ['invalid email'] });
         if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
@@ -168,7 +168,7 @@ export default {
             res = { errors: [passwordError] };
           } else {
             UserModel.update({
-              username: decoded.username
+              email: decoded.email
             }, { password: hash }, function() {
               res = {
                 user
