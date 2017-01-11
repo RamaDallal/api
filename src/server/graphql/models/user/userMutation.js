@@ -156,11 +156,11 @@ export default {
       }
     }),
     args: {
-      email: { type: GraphQLString },
       newPassword: { type: GraphQLString }
     },
-    resolve: (_, args:Object):Object => new Promise((resolve) => {
-      var decoded = jwt.decode(args.token, config.jwt.secretKey);
+    resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
+      const token = context.headers.authorization;
+      var decoded = jwt.decode(token, config.jwt.secretKey);
       bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hashSync(args.newPassword, salt, function(result, passwordError) {
           let res;
@@ -170,7 +170,7 @@ export default {
             res = { errors: [passwordError] };
           } else {
             UserModel.update({
-              email: decoded.email
+              _id: decoded.id
             }, { password: hash }, function() {
               res = {
                 user
