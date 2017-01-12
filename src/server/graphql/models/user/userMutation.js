@@ -156,21 +156,23 @@ export default {
       }
     }),
     args: {
-      newPassword: { type: GraphQLString }
+      newPassword: { type: GraphQLString },
+      token: { type: GraphQLString }
     },
-    resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
-      const token = context.headers.authorization;
-      var decoded = jwt.decode(token, config.jwt.secretKey);
-      bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hashSync(args.newPassword, salt, function(result, passwordError) {
+    resolve: (_, args:Object, context:Object, request):Object => new Promise((resolve) => {
+      var decoded = jwt.decode(args.token, config.jwt.secretKey);
+      console.log(decoded);
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(args.newPassword, salt);
+      UserModel.findOne({ username: decoded.username }, function(err, user) {
           let res;
-          if (!result) {
+          if (!user) {
             res = { errors: ['Invalid password'] };
-          } else if (passwordError) {
-            res = { errors: [passwordError] };
+          } else if (err) {
+            res = { errors: [err] };
           } else {
             UserModel.update({
-              _id: decoded.id
+              username: decoded.username
             }, { password: hash }, function() {
               res = {
                 user
@@ -179,7 +181,6 @@ export default {
             });
           }
         })
-      })
     })
   }
 }

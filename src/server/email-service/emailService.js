@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import sgTransport from 'nodemailer-sendgrid-transport';
 import config from '../../../config';
 import {EmailTemplate} from 'email-templates';
+import jwt from 'jsonwebtoken';
 
 const nodeMailerOptions = {
   auth: {
@@ -26,7 +27,8 @@ export const signUpConfirmEmail = (user, callback) => {
 };
 export const forgottenPasswordEmail = (user, callback) => {
   const { email } = user;
-  var link = 'http://' + config.frontendHost + ':' + config.frontendPort + '/resetPassword?email=' + user.email;
+  var token = jwt.sign({ email: user.email }, config.jwt.secretKey);
+  var link = 'http://' + config.frontendHost + ':' + config.frontendPort + '/resetPassword?token=' + token;
   const sendPwdReminder = transporter.templateSender(new EmailTemplate('src/server/email-service/template/forgotten-password'), {
     from: 'sender@example.com'
   });
