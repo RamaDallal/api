@@ -93,7 +93,7 @@ export default {
     }),
     args: {
       password: { type: GraphQLString },
-      newPassword: { type: GraphQLString },
+      newPassword: { type: GraphQLString }
     },
     resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
       const token = context.headers.authorization;
@@ -159,7 +159,7 @@ export default {
       newPassword: { type: GraphQLString },
       token: { type: GraphQLString }
     },
-    resolve: (_, args:Object, context:Object, request):Object => new Promise((resolve) => {
+    resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
       var decoded = jwt.decode(args.token, config.jwt.secretKey);
       console.log(decoded);
       const salt = bcrypt.genSaltSync(10);

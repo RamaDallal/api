@@ -3,7 +3,11 @@ import mongoose, { Schema } from 'mongoose';
 const userSchema = new Schema({
   email: {type: String, unique: true},
   password: String,
-  isAuthenticated: false
+  isAuthenticated: false,
+  facebook: {
+    id: String,
+    email: String
+  }
 });
 
 userSchema.pre("save", function (next) {

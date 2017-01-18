@@ -25,6 +25,12 @@ module.exports = Object.assign({
   },
   jwt: {
     secretKey: 'super_secret'
+  },
+  facebookAuth: {
+    clientID: '246362195777238',
+    clientSecret: 'f76c130fe5ebc025d0f059652da4811d',
+    callbackURL: 'http://localhost:3030/auth/facebook/callback',
+    profileFields: ['id', 'email', 'name']
   }
 }, environment);
 /*eslint-enable */
