@@ -13,32 +13,30 @@ import User from './graphql/models/user/UserModel';
 import FacebookStrategy from 'passport-facebook';
 import passport from 'passport';
 
-const home = (req: Object, res: Object): Object => res.sendStatus(200);
+const home = (req:Object, res:Object):Object => res.sendStatus(200);
 setupDB(config.db);
+
 var app = express();
+app.use('/api/graphql/confirm', function(req, res) {
+  User.update({ _id: req.query.id }, { isAuthenticated: true }, function(err, user) {
+    if (err) throw err;
 
-  app.use('/api/graphql/confirm', function (req, res) {
-    User.update({_id: req.query.id}, {isAuthenticated: true}, function (err, user) {
-      if (err) throw err;
-
-      if (!user) {
-        return res.status(403).send({success: false, message: 'Authentication failed. User not found.'});
-      } else {
-        res.json({success: true, message: 'Welcome in the member area '});
-      }
-    });
+    if (!user) {
+      return res.status(403).send({ success: false, message: 'Authentication failed. User not found.' });
+    } else {
+      res.json({ success: true, message: 'Welcome in the member area ' });
+    }
   });
-  app.use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }));
-  app.use('/*', home);
-
-
-app.listen(process.env.PORT || 3030);
+});
+app.use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }));
 app.route('/auth/facebook').get(passport.authenticate('facebook', {
-  scope: ['email']
+  scope: 'email'
 }));
 app.route('/auth/facebook/callback').get(passport.authenticate('facebook', function(err, user, info) {
   console.log(err, user, info);
 }));
+app.use('/*', home);
+app.listen(process.env.PORT || 3030);
 
 var fbOpts = {
   clientID: config.facebookAuth.clientID,
