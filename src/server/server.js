@@ -15,9 +15,9 @@ import passport from 'passport';
 
 const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
+var app = express();
 
-express()
-  .use('/api/graphql/confirm', function (req, res) {
+  app.use('/api/graphql/confirm', function (req, res) {
     User.update({_id: req.query.id}, {isAuthenticated: true}, function (err, user) {
       if (err) throw err;
 
@@ -27,11 +27,10 @@ express()
         res.json({success: true, message: 'Welcome in the member area '});
       }
     });
-  })
-  .use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }))
-  .use('/*', home);
+  });
+  app.use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }));
+  app.use('/*', home);
 
-var app = express();
 
 app.listen(process.env.PORT || 3030);
 app.route('/auth/facebook').get(passport.authenticate('facebook', {
