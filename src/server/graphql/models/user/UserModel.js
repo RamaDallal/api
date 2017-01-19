@@ -4,10 +4,8 @@ const userSchema = new Schema({
   email: {type: String, unique: true},
   password: String,
   isAuthenticated: false,
-  facebook: {
-    id: String,
-    email: String
-  }
+  providerId: '1243303579079780',
+  providerType: 'facebook'
 });
 
 userSchema.pre("save", function (next) {

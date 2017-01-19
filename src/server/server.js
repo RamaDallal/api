@@ -41,7 +41,7 @@ app.listen(process.env.PORT || 3030);
 var fbOpts = {
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
-  callbackURL: config.facebookAuth.callbackURL,
+  callbackURL: config.callbackURL,
   profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'email', 'photos']
 };
 var fbCallback = function(access_token, refresh_token, profile, done) {
