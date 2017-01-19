@@ -93,7 +93,7 @@ export default {
     }),
     args: {
       password: { type: GraphQLString },
-      newPassword: { type: GraphQLString }
+      newPassword: { type: GraphQLString },
     },
     resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
       const token = context.headers.authorization;
