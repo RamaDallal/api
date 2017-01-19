@@ -12,15 +12,28 @@ const cors = require('cors');
 import User from './graphql/models/user/UserModel';
 import FacebookStrategy from 'passport-facebook';
 import passport from 'passport';
-import bodyParser from 'body-parser';
 
-
+const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
-var app = express();
-app.listen(3030);
-app.use(bodyParser.json());
+express()
+  .use('/api/graphql/confirm', function (req, res) {
+    User.update({_id: req.query.id}, {isAuthenticated: true}, function (err, user) {
+      if (err) throw err;
 
+      if (!user) {
+        return res.status(403).send({success: false, message: 'Authentication failed. User not found.'});
+      } else {
+        res.json({success: true, message: 'Welcome in the member area '});
+      }
+    });
+  })
+  .use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }))
+  .use('/*', home);
+
+var app = express();
+
+app.listen(process.env.PORT || 3030);
 app.route('/auth/facebook').get(passport.authenticate('facebook', {
   scope: ['email']
 }));
@@ -42,7 +55,7 @@ var fbCallback = function(access_token, refresh_token, profile, done) {
         return done(err);
       if (user) {
         return done(null, user);
-      } else {//      console.log('verifys');
+      } else {
         const newUser = new User();
         newUser.facebook.id = profile.id;
         newUser.facebook.email = profile._json.email;
