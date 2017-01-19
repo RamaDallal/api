@@ -54,8 +54,8 @@ var fbCallback = function(access_token, refresh_token, profile, done) {
         return done(null, user);
       } else {
         const newUser = new User();
-        newUser.facebook.id = profile.id;
-        newUser.facebook.email = profile._json.email;
+        newUser.id = profile.id;
+        newUser.email = profile._json.email;
         newUser.save(function(err) {
           if (err)
             throw err;
