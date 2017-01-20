@@ -9,7 +9,7 @@ import {
 import config from '../../../../../config.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {signUpConfirmEmail, forgottenPasswordEmail} from '../../../email-service/emailService';
+import { signUpConfirmEmail, forgottenPasswordEmail } from '../../../email-service/emailService';
 
 export default {
   signup: {
@@ -64,7 +64,8 @@ export default {
     resolve: (_, args:Object):Object => new Promise((resolve) => {
       UserModel.findOne({ email: args.email }, (emailError, user) => {
         if (emailError || !user) return resolve({ errors: ['invalid email'] });
-        if (user.isAuthenticated === false) return resolve({ errors: ['please confirm your email'] });
+        if (user.isAuthenticated === false)
+          return resolve({ errors: ['please confirm your email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
@@ -97,10 +98,10 @@ export default {
     },
     resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
       const token = context.headers.authorization;
-      var decoded = jwt.decode(token, config.jwt.secretKey);
+      const decoded = jwt.decode(token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      UserModel.findOne({ _id: decoded.id }, function(err, user) {
+      UserModel.findOne({ _id: decoded.id }, function (err, user) {
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
@@ -139,7 +140,7 @@ export default {
         if (emailError || !user) return resolve({ errors: ['invalid email'] });
         forgottenPasswordEmail(user, (err) => {
           if (err) {
-            console.log('error')
+            console.log('error');
           } else {
             resolve({ user: [user] });
           }
@@ -159,28 +160,27 @@ export default {
       newPassword: { type: GraphQLString },
       token: { type: GraphQLString }
     },
-    resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
-      var decoded = jwt.decode(args.token, config.jwt.secretKey);
-      console.log(decoded);
+    resolve: (_, args:Object):Object => new Promise((resolve) => {
+      const decoded = jwt.decode(args.token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      UserModel.findOne({ username: decoded.username }, function(err, user) {
-          let res;
-          if (!user) {
-            res = { errors: ['Invalid password'] };
-          } else if (err) {
-            res = { errors: [err] };
-          } else {
-            UserModel.update({
-              username: decoded.username
-            }, { password: hash }, function() {
-              res = {
-                user
-              };
-              return resolve(res);
-            });
-          }
-        })
+      UserModel.findOne({ username: decoded.username }, function (err, user) {
+        let res;
+        if (!user) {
+          res = { errors: ['Invalid password'] };
+        } else if (err) {
+          res = { errors: [err] };
+        } else {
+          UserModel.update({
+            username: decoded.username
+          }, { password: hash }, function () {
+            res = {
+              user
+            };
+            return resolve(res);
+          });
+        }
+      });
     })
   }
-}
+};

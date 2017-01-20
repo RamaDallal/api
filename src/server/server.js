@@ -13,12 +13,12 @@ import User from './graphql/models/user/UserModel';
 import FacebookStrategy from 'passport-facebook';
 import passport from 'passport';
 
-const home = (req:Object, res:Object):Object => res.sendStatus(200);
+const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
-var app = express();
-app.use('/api/graphql/confirm', function(req, res) {
-  User.update({ _id: req.query.id }, { isAuthenticated: true }, function(err, user) {
+const app = express();
+app.use('/api/graphql/confirm', function (req, res) {
+  User.update({ _id: req.query.id }, { isAuthenticated: true }, function (err, user) {
     if (err) throw err;
 
     if (!user) {
@@ -28,25 +28,28 @@ app.use('/api/graphql/confirm', function(req, res) {
     }
   });
 });
-app.use('/api/graphql', cors(), graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true }));
+app.use('/api/graphql', cors(),
+  graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true
+  }));
 app.route('/auth/facebook').get(passport.authenticate('facebook', {
   scope: 'email'
 }));
-app.route('/auth/facebook/callback').get(passport.authenticate('facebook', function(err, user, info) {
-  console.log(err, user, info);
-}));
+app.route('/auth/facebook/callback')
+  .get(passport.authenticate('facebook', function (err, user, info) {
+     console.log(err, user, info);
+  }));
 app.use('/*', home);
 app.listen(process.env.PORT || 3030);
 
-var fbOpts = {
+const fbOpts = {
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
   callbackURL: config.callbackURL,
   profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'email', 'photos']
 };
-var fbCallback = function(access_token, refresh_token, profile, done) {
+const fbCallback = function(refreshToken, refreshToken, profile, done) {
   process.nextTick(function() {
-    console.log(access_token, refresh_token, profile, done);
+    console.log(refreshToken, refreshToken, profile, done);
     User.findOne({ "id": profile.id }, function(err, user) {
       if (err)
         return done(err);
@@ -59,7 +62,7 @@ var fbCallback = function(access_token, refresh_token, profile, done) {
         newUser.save(function(err) {
           if (err)
             throw err;
-          return done(null, newUser);
+            return done(null, newUser);
         });
       }
     });
