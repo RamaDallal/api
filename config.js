@@ -7,7 +7,9 @@ const environment = {
     apiPort: 3030,
     frontendHost: process.env.APIHOST || 'localhost',
     frontendPort: 3000,
-    callbackURL: 'http://localhost:3030/auth/facebook/callback'
+    facebook: {
+      callbackURL: 'http://localhost:3030/auth/facebook/callback'
+    }
   },
   production: {
     host: process.env.HOST || 'localhost',
@@ -17,7 +19,9 @@ const environment = {
     frontendHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
     backendHost: process.env.APIHOST || 'pazar-next.herokuapp.com',
     frontendPort: '',
-    callbackURL: 'https://pazar-graphql.herokuapp.com/auth/facebook/callback'
+    facebook: {
+      callbackURL: 'https://pazar-graphql.herokuapp.com/auth/facebook/callback'
+    }
   }
 }[process.env.NODE_ENV || 'development'];
 module.exports = Object.assign({
