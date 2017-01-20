@@ -101,7 +101,7 @@ export default {
       const decoded = jwt.decode(token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      UserModel.findOne({ _id: decoded.id }, function (err, user) {
+      UserModel.findOne({ _id: decoded.id }, (err, user) => {
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
@@ -113,7 +113,7 @@ export default {
           } else {
             UserModel.update({
               _id: decoded.id
-            }, { password: hash }, function() {
+            }, { password: hash }, () => {
               res = {
                 user
               };
@@ -136,7 +136,7 @@ export default {
       email: { type: GraphQLString }
     },
     resolve: (_, args:Object):Object => new Promise((resolve) => {
-      UserModel.findOne({ email: args.email }, function(emailError, user) {
+      UserModel.findOne({ email: args.email }, (emailError, user) => {
         if (emailError || !user) return resolve({ errors: ['invalid email'] });
         forgottenPasswordEmail(user, (err) => {
           if (err) {
@@ -164,7 +164,7 @@ export default {
       const decoded = jwt.decode(args.token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      UserModel.findOne({ username: decoded.username }, function (err, user) {
+      UserModel.findOne({ username: decoded.username }, (err, user) => {
         let res;
         if (!user) {
           res = { errors: ['Invalid password'] };
@@ -173,7 +173,7 @@ export default {
         } else {
           UserModel.update({
             username: decoded.username
-          }, { password: hash }, function () {
+          }, { password: hash }, () => {
             res = {
               user
             };

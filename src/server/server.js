@@ -17,8 +17,8 @@ const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
 const app = express();
-app.use('/api/graphql/confirm', function (req, res) {
-  User.update({ _id: req.query.id }, { isAuthenticated: true }, function (err, user) {
+app.use('/api/graphql/confirm', (req, res) => {
+  User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
 
     if (!user) {
@@ -35,7 +35,7 @@ app.route('/auth/facebook').get(passport.authenticate('facebook', {
   scope: 'email'
 }));
 app.route('/auth/facebook/callback')
-  .get(passport.authenticate('facebook', function (err, user, info) {
+  .get(passport.authenticate('facebook', (err, user, info) => {
      console.log(err, user, info);
   }));
 app.use('/*', home);
@@ -47,10 +47,10 @@ const fbOpts = {
   callbackURL: config.facebookAuth.callbackURL,
   profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'email', 'photos']
 };
-const fbCallback = function(accessToken, refreshToken, profile, done) {
-  process.nextTick(function() {
+const fbCallback = (accessToken, refreshToken, profile, done) => {
+  process.nextTick(() => {
     console.log(accessToken, refreshToken, profile, done);
-    User.findOne({ "facebook.providerId ": profile.id }, function(err, user) {
+    User.findOne({ "providerId ": profile.id }, (err, user) => {
       if (err)
         return done(err);
       if (user) {
@@ -60,7 +60,7 @@ const fbCallback = function(accessToken, refreshToken, profile, done) {
         newUser.providerType = 'Facebook';
         newUser.providerId = profile.id;
         newUser.email = profile._json.email;
-        newUser.save(function(err) {
+        newUser.save((err) => {
           if (err)
             throw err;
             return done(null, newUser);
