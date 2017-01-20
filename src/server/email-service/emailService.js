@@ -12,7 +12,7 @@ const nodeMailerOptions = {
 const transporter = nodemailer.createTransport(sgTransport(nodeMailerOptions));
 export const signUpConfirmEmail = (user, callback) => {
   const { email } = user;
-  const link = `http:// ${config.apiHost} : ${config.apiPort} /api/graphql/confirm?id= ${user.id}`;
+  const link = `http://${config.apiHost}:${config.apiPort}/api/graphql/confirm?id=${user.id}`;
   const sendPwdReminder = transporter.templateSender(
     new EmailTemplate('src/server/email-service/template/sign-up-confirm'), {
       from: 'sender@example.com'
@@ -25,7 +25,7 @@ export const signUpConfirmEmail = (user, callback) => {
 export const forgottenPasswordEmail = (user, callback) => {
   const { email } = user;
   const token = jwt.sign({ email: user.email }, config.jwt.secretKey);
-  const link = `http:// ${config.frontendHost} : ${config.frontendPort} /api/graphql/confirm?id= ${token}`;
+  const link = `http://${config.frontendHost}:${config.frontendPort}/api/graphql/confirm?id=${token}`;
   const sendPwdReminder = transporter.templateSender(
     new EmailTemplate('src/server/email-service/template/forgotten-password'), {
       from: 'sender@example.com'

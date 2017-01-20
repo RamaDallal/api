@@ -44,7 +44,7 @@ app.listen(process.env.PORT || 3030);
 const fbOpts = {
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
-  callbackURL: config.facebook.callbackURL,
+  callbackURL: config.facebookAuth.callbackURL,
   profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'email', 'photos']
 };
 const fbCallback = function(accessToken, refreshToken, profile, done) {
@@ -57,7 +57,8 @@ const fbCallback = function(accessToken, refreshToken, profile, done) {
         return done(null, user);
       } else {
         const newUser = new User();
-        newUser.facebook.providerId = profile.id;
+        newUser.providerType = 'Facebook';
+        newUser.providerId = profile.id;
         newUser.email = profile._json.email;
         newUser.save(function(err) {
           if (err)
