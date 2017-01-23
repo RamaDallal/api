@@ -8,9 +8,9 @@ const userSchema = new Schema({
   providerType: String
 });
 
-userSchema.pre('save', (next) => {
+userSchema.pre('save', (next, profile) => {
   const user = this;
-  mongoose.models['User'].findOne({ email: user.email }, 'email', (err, results) => {
+  mongoose.models['User'].findOne({ email: profile.email }, 'email', (err, results) => {
     if (results) {
       user.invalidate('email');
       next(new Error('User Email must be unique, another one take this email'));

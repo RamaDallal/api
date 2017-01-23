@@ -17,6 +17,15 @@ const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
 const app = express();
+app.use(passport.initialize());
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
@@ -31,13 +40,15 @@ app.use('/api/graphql/confirm', (req, res) => {
 app.use('/api/graphql', cors(),
   graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true
   }));
+
 app.route('/auth/facebook').get(passport.authenticate('facebook', {
   scope: 'email'
 }));
-app.route('/auth/facebook/callback')
-  .get(passport.authenticate('facebook', (err, user, info) => {
-     console.log(err, user, info);
+app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+    successRedirect : 'http://localhost:3000/',
+    failureRedirect : '/'
   }));
+
 app.use('/*', home);
 app.listen(process.env.PORT || 3030);
 
@@ -56,14 +67,14 @@ const fbCallback = (accessToken, refreshToken, profile, done) => {
       if (user) {
         return done(null, user);
       } else {
-        const newUser = new User();
-        newUser.providerType = 'Facebook';
-        newUser.providerId = profile.id;
-        newUser.email = profile._json.email;
-        newUser.save((err) => {
+        const user = new User();
+        user.providerType = 'Facebook';
+        user.providerId = profile.id;
+        user.email = profile._json.email;
+        user.save((err) => {
           if (err)
             throw err;
-            return done(null, newUser);
+            return done(null, user);
         });
       }
     });
