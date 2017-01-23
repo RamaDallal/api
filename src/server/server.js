@@ -25,7 +25,6 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });
-
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
@@ -41,15 +40,13 @@ app.use('/api/graphql/confirm', (req, res) => {
 app.use('/api/graphql', cors(),
   graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true
   }));
-
 app.route('/auth/facebook').get(passport.authenticate('facebook', {
   scope: 'email'
 }));
 app.get('/auth/facebook/callback', passport.authenticate('facebook', {
-    successRedirect : 'http://localhost:3000/',
-    failureRedirect : '/'
-  }));
-
+  successRedirect : 'http://localhost:3000/',
+  failureRedirect : '/'
+}));
 app.use('/*', home);
 app.listen(process.env.PORT || 3030);
 
