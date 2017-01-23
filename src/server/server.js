@@ -49,35 +49,39 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 }));
 app.use('/*', home);
 app.listen(process.env.PORT || 3030);
-
-const fbOpts = {
-  clientID: config.facebookAuth.clientID,
-  clientSecret: config.facebookAuth.clientSecret,
-  callbackURL: config.facebookAuth.callbackURL,
-  profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'email', 'photos']
-};
-const fbCallback = (accessToken, refreshToken, profile, done) => {
-  process.nextTick(() => {
-    console.log(accessToken, refreshToken, profile, done);
-    User.findOne({ "providerId ": profile.id }, (err, user) => {
+passport.use(new FacebookStrategy({
+    clientID: config.facebookAuth.clientID,
+    clientSecret: config.facebookAuth.clientSecret,
+    callbackURL: config.facebookAuth.callbackURL,
+    profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'email', 'photos']
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOne({
+      'providerId': profile.id
+    }, function(err, user) {
       if (err)
         return done(err);
       if (user) {
-        return done(null, user);
-      } else {
-        const user = new User();
-        user.providerType = 'Facebook';
-        user.providerId = profile.id;
-        user.email = profile._json.email;
-        user.save((err) => {
-          if (err)
-            throw err;
-            return done(null, user);
-        });
+        console.log('cd');
+        console.log(user);
+        return done(err, user);
       }
+      user = new User({
+        email: profile._json.email,
+        providerType: 'Facebook',
+        providerId: profile.id
+      });
+      user.save(function(err) {
+        console.log('c');
+        console.log(user);
+        if (err) {
+          console.log(err);
+          return done(null, false, {message: 'Windows Live login failed, email already used by other login strategy'});
+        } else {
+          return done(err, user);
+        }
+      });
     });
-  });
-};
-
-passport.use(new FacebookStrategy(fbOpts, fbCallback));
+  }
+));
 
