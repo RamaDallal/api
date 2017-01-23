@@ -37,6 +37,7 @@ app.use('/api/graphql/confirm', (req, res) => {
     }
   });
 });
+
 app.use('/api/graphql', cors(),
   graphqlHTTP({ schema: Schema, graphiql: true, pretty: true, raw: true
   }));
