@@ -25,7 +25,7 @@ export const signUpConfirmEmail = (user, callback) => {
 export const forgottenPasswordEmail = (user, callback) => {
   const { email } = user;
   const token = jwt.sign({ email: user.email }, config.jwt.secretKey);
-  const link = `http://${config.frontendHost}:${config.frontendPort}/api/graphql/confirm?id=${token}`;
+  const link = `http://${config.frontendHost}:${config.frontendPort}/resetPassword?token=${token}`;
   const sendPwdReminder = transporter.templateSender(
     new EmailTemplate('src/server/email-service/template/forgotten-password'), {
       from: 'sender@example.com'

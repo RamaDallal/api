@@ -164,7 +164,7 @@ export default {
       const decoded = jwt.decode(args.token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      UserModel.findOne({ username: decoded.username }, (err, user) => {
+      UserModel.findOne({ email: decoded.email }, (err, user) => {
         let res;
         if (!user) {
           res = { errors: ['Invalid password'] };
@@ -172,7 +172,7 @@ export default {
           res = { errors: [err] };
         } else {
           UserModel.update({
-            username: decoded.username
+            email: decoded.email
           }, { password: hash }, () => {
             res = {
               user
