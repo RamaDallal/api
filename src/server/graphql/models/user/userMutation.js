@@ -64,8 +64,8 @@ export default {
     resolve: (_, args:Object):Object => new Promise((resolve) => {
       UserModel.findOne({ email: args.email }, (emailError, user) => {
         if (emailError || !user) return resolve({ errors: ['invalid email'] });
-        if (user.isAuthenticated === false)
-          return resolve({ errors: ['please confirm your email'] });
+        if (user.isAuthenticated === false) return resolve(
+          { errors: ['please confirm your email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
