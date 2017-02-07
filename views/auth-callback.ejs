@@ -8,8 +8,6 @@
 
 </body>
 <script>
-    alert('asd');
-    alert(JSON.stringify(<%- JSON.stringify(token) %>));
     window.opener.postMessage(<%- JSON.stringify(token) %>, "*");
     window.close();
 </script>
