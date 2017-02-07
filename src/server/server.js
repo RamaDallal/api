@@ -18,7 +18,7 @@ const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
 const app = express();
-
+app.set('view engine', 'ejs');
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
@@ -65,18 +65,20 @@ passport.use(new FacebookStrategy({
   }
 ));
 
-app.route('/auth/facebook').get(passport.authenticate('facebook', {
+app.get('/auth/facebook', passport.authenticate('facebook', {
+  display: 'popup',
   session: false,
   scope: ['email', 'public_profile']
 }));
-
-app.get('/auth/facebook/callback', (req, res, next) => {
-  passport.authenticate('facebook', (err, user) => {
-    const token = jwt.sign({ email: user.email, id: user.id }, config.jwt.secretKey);
-    res.redirect(`http://localhost:3000/?token=${token}`);
-  }
-  )(req, res, next);
-});
+app.get('/auth/facebook/callback', (req, res, next) => passport.authenticate('facebook', (err, user) => err ? res.status(400).send(err) :
+  res.render('auth-callback', {
+    token: {
+      token: jwt.sign({
+        email: user.email,
+        id: user.id
+      }, config.jwt.secretKey)
+    }
+  }))(req, res, next));
 
 app.use('/*', home);
 app.listen(process.env.PORT || 3030);
