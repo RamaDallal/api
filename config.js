@@ -19,8 +19,8 @@ const environment = {
     port: process.env.PORT,
     apiHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
     apiPort: '',
-    frontendHost: process.env.APIHOST || 'pazar-next.herokuapp.com',
-    backendHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
+    frontendHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
+    backendHost: process.env.APIHOST || 'pazar-next.herokuapp.com',
     frontendPort: '',
     facebookAuth: {
       clientID: '880494102091189',
