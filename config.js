@@ -23,8 +23,8 @@ const environment = {
     backendHost: process.env.APIHOST || 'pazar-next.herokuapp.com',
     frontendPort: '',
     facebookAuth: {
-      clientID: '246362195777238',
-      clientSecret: 'f76c130fe5ebc025d0f059652da4811d',
+      clientID: '880494102091189',
+      clientSecret: 'a160af2e6e7dc6cb851a4ee07993a431',
       callbackURL: 'https://pazar-graphql.herokuapp.com/auth/facebook/callback',
       profileFields: ['id', 'email', 'name']
 
