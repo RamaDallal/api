@@ -38,9 +38,9 @@ app.use('/api/graphql', cors(),
 app.use(passport.initialize());
 
 passport.use(new FacebookStrategy({
-  clientID: config.facebookAuth.clientID,
-  clientSecret: config.facebookAuth.clientSecret,
-  callbackURL: config.facebookAuth.callbackURL,
+  clientID: '880494102091189',
+  clientSecret: 'a160af2e6e7dc6cb851a4ee07993a431',
+  callbackURL: 'https://pazar-graphql.herokuapp.com/auth/facebook/callback',
   profileFields: ['id', 'name', 'gender', 'displayName', 'photos', 'profileUrl', 'email']
 },
   (accessToken, refreshToken, profile, done) => {
