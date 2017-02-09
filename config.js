@@ -15,8 +15,6 @@ const environment = {
     }
   },
   production: {
-    host: process.env.HOST || 'localhost',
-    port: process.env.PORT,
     apiHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
     apiPort: '',
     frontendHost: process.env.APIHOST || 'pazar-next.herokuapp.com',
