@@ -36,7 +36,12 @@ app.use('/api/graphql', cors(),
   }));
 
 app.use(passport.initialize());
-
+console.log({
+  clientID: config.facebookAuth.clientID,
+  clientSecret: config.facebookAuth.clientSecret,
+  callbackURL: config.facebookAuth.callbackURL,
+  profileFields: ['id', 'name', 'gender', 'displayName', 'photos', 'profileUrl', 'email']
+});
 passport.use(new FacebookStrategy({
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
