@@ -49,12 +49,14 @@ passport.use(new FacebookStrategy({
   profileFields: ['id', 'name', 'gender', 'displayName', 'photos', 'profileUrl', 'email']
 },
   (accessToken, refreshToken, profile, done) => {
+    console.log(user);
     User.findOne({
       providerId: profile.id
     }, (err, user) => {
       if (err)
         return done(err);
       if (user) {
+        console.log(user);
         const token = jwt.sign({ email: user.email }, config.jwt.secretKey);
         return done(err, user, token);
       }
