@@ -64,6 +64,7 @@ passport.use(new FacebookStrategy({
         providerId: profile.id
       });
       user.save(() => {
+        console.log(user);
         return done(user);
       });
     });
