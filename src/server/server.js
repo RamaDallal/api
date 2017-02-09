@@ -63,8 +63,8 @@ passport.use(new FacebookStrategy({
         providerType: 'Facebook',
         providerId: profile.id
       });
+      console.log(user);
       user.save(() => {
-        console.log(user);
         return done(user);
       });
     });
