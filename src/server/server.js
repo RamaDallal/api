@@ -36,12 +36,6 @@ app.use('/api/graphql', cors(),
   }));
 
 app.use(passport.initialize());
-console.log({
-  clientID: config.facebookAuth.clientID,
-  clientSecret: config.facebookAuth.clientSecret,
-  callbackURL: config.facebookAuth.callbackURL,
-  profileFields: ['id', 'name', 'gender', 'displayName', 'photos', 'profileUrl', 'email']
-});
 passport.use(new FacebookStrategy({
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
@@ -52,20 +46,21 @@ passport.use(new FacebookStrategy({
     User.findOne({
       providerId: profile.id
     }, (err, user) => {
-      if (err)
+      if(err)
         return done(err);
-      if (user) {
-        const token = jwt.sign({ email: user.email }, config.jwt.secretKey);
-        return done(err, user, token);
+      if(user)
+        return done(null, user);
+      else {
+        var newUser = new User();
+        newUser.email= profile._json.email,
+        newUser.providerType= 'Facebook',
+        newUser.providerId=  profile.id,
+        newUser.save(function(err){
+          if(err)
+            throw err;
+          return done(null, newUser);
+        });
       }
-      user = new User({
-        email: profile._json.email,
-        providerType: 'Facebook',
-        providerId: profile.id
-      });
-      user.save(() => {
-        return done(user);
-      });
     });
   }
 ));
