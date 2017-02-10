@@ -60,6 +60,7 @@ passport.use(new FacebookStrategy({
             throw err;
           return done(null, newUser);
         });
+        console.log('x');
         console.log(profile);
       }
     });
