@@ -55,7 +55,7 @@ passport.use(new FacebookStrategy({
         newUser.email= profile._json.email,
         newUser.providerType= 'Facebook',
         newUser.providerId=  profile.id,
-        newUser.save(function(err){
+        newUser.save((err) => {
           if(err)
             throw err;
           return done(null, newUser);
