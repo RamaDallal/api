@@ -40,7 +40,7 @@ passport.use(new FacebookStrategy({
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
   callbackURL: config.facebookAuth.callbackURL,
-  profileFields: ['id', 'name', 'gender', 'displayName', 'picture.height(30).width(30)', 'profileUrl', 'email']
+  profileFields: ['id', 'name', 'gender', 'displayName', 'picture.height(5).width(5)', 'profileUrl', 'email']
 },
   (accessToken, refreshToken, profile, done) => {
     User.findOne({
