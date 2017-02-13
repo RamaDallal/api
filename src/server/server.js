@@ -40,7 +40,7 @@ passport.use(new FacebookStrategy({
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
   callbackURL: config.facebookAuth.callbackURL,
-  profileFields: ['id', 'name', 'gender', 'displayName', 'photos', 'profileUrl', 'email']
+  profileFields: ['id', 'name', 'gender', 'displayName', 'picture.height(30).width(30)', 'profileUrl', 'email']
 },
   (accessToken, refreshToken, profile, done) => {
     User.findOne({
@@ -54,12 +54,13 @@ passport.use(new FacebookStrategy({
         var newUser = new User();
         newUser.email= profile._json.email,
         newUser.providerType= 'Facebook',
-        newUser.providerId=  profile.id,
-        newUser.save((err) => {
-          if(err)
+        newUser.providerId= profile.id,
+        newUser.avatar = profile.photos ? profile.photos[0].value : '/img/faces/unknown-user-pic.jpg',
+          newUser.save((err) => {
+            if(err)
             throw err;
-          return done(null, newUser);
-        });
+            return done(null, newUser);
+          });
       }
     });
   }
