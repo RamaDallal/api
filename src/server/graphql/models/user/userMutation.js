@@ -182,5 +182,38 @@ export default {
         }
       });
     })
+  },
+  accountSetting: {
+    type: new ObjectType({
+      name: 'AccountSettingResult',
+      fields: {
+        errors: { type: new List(StringType) },
+      }
+    }),
+    args: {
+      displayName: { type: GraphQLString }
+    },
+    resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
+      const token = context.headers.authorization;
+      const decoded = jwt.decode(token, config.jwt.secretKey);
+      UserModel.findOne({ _id: decoded.id }, (err, user) => {
+        let res;
+        if (!user) {
+          res = { errors: ['Invalid password'] };
+        } else if (err) {
+          res = { errors: [err] };
+        } else {
+          UserModel.update({
+            email: decoded.email
+          }, { displayName: args.displayName }, () => {
+            res = {
+              user
+            };
+            return resolve(res);
+          });
+        }
+      });
+    })
   }
 };
+
