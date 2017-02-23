@@ -13,12 +13,21 @@ import User from './graphql/models/user/UserModel';
 import FacebookStrategy from 'passport-facebook';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
+import S3FS from 's3fs';
+import multiparty from 'connect-multiparty';
+const multipartyMiddleware = multiparty();
+const s3fsImpl = new S3FS('pazarnextbucket', {
+  AWSAccessKeyId: 'AKIAIJD67AKHPDOBXPCQ',
+  AWSSecretKey: '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'
+})
+
 
 const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
 const app = express();
 app.set('view engine', 'ejs');
+app.use(multipartyMiddleware);
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
