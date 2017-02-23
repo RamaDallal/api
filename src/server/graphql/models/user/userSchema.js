@@ -9,7 +9,8 @@ const User = new GraphQLObjectType({
     id: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
-    avatar: { type: GraphQLString }
+    avatar: { type: GraphQLString },
+    displayName: { type: GraphQLString }
   }
 });
 export default User;

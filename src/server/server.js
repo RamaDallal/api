@@ -13,12 +13,15 @@ import User from './graphql/models/user/UserModel';
 import FacebookStrategy from 'passport-facebook';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+const upload = multer({ dest: 'src/server/uploads' });
 
 const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
 const app = express();
 app.set('view engine', 'ejs');
+app.use(express.static('src/server/uploads'));
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
@@ -40,7 +43,7 @@ passport.use(new FacebookStrategy({
   clientID: config.facebookAuth.clientID,
   clientSecret: config.facebookAuth.clientSecret,
   callbackURL: config.facebookAuth.callbackURL,
-  profileFields: ['id', 'name', 'gender', 'displayName', 'picture.height(5).width(5)', 'profileUrl', 'email']
+  profileFields: ['id', 'name', 'gender', 'displayName', 'picture.height(150).width(150)', 'profileUrl', 'email']
 },
   (accessToken, refreshToken, profile, done) => {
     User.findOne({
@@ -51,14 +54,15 @@ passport.use(new FacebookStrategy({
       if(user)
         return done(null, user);
       else {
-        var newUser = new User();
-        newUser.email= profile._json.email,
-        newUser.providerType= 'Facebook',
-        newUser.providerId= profile.id,
+        const newUser = new User();
+        newUser.email = profile._json.email,
+        newUser.providerType = 'Facebook',
+        newUser.providerId = profile.id,
         newUser.avatar = profile.photos ? profile.photos[0].value : '/img/faces/unknown-user-pic.jpg',
-          newUser.save((err) => {
-            if(err)
-            throw err;
+        newUser.displayName = profile._json.name,
+          newUser.save(() => {
+            if (err)
+              throw err;
             return done(null, newUser);
           });
       }
@@ -71,7 +75,8 @@ app.get('/auth/facebook', passport.authenticate('facebook', {
   session: false,
   scope: ['email', 'public_profile']
 }));
-app.get('/auth/facebook/callback', (req, res, next) => passport.authenticate('facebook', (err, user) => err ? res.status(400).send(err) :
+app.get('/auth/facebook/callback', (req, res, next) =>
+  passport.authenticate('facebook', (err, user) => err ? res.status(400).send(err) :
   res.render('auth-callback', {
     token: {
       token: jwt.sign({
@@ -80,6 +85,8 @@ app.get('/auth/facebook/callback', (req, res, next) => passport.authenticate('fa
       }, config.jwt.secretKey)
     }
   }))(req, res, next));
-
+app.post('/upload', upload.single('photo'), (req, res) => {
+  res.send(req.file);
+});
 app.use('/*', home);
 app.listen(process.env.PORT || 3030);

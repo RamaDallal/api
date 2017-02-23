@@ -6,7 +6,8 @@ const userSchema = new Schema({
   isAuthenticated: false,
   providerId: String,
   providerType: String,
-  avatar: String
+  avatar: String,
+  displayName: String
 });
 
 const User = mongoose.model('User', userSchema);
