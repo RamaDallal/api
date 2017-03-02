@@ -14,18 +14,22 @@ import FacebookStrategy from 'passport-facebook';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
+import AWS from 'aws-sdk';
+import bodyParser from 'body-parser';
+import multerS3 from 'multer-s3';
+import fs from 'fs';
 const upload = multer({ dest: 'src/server/uploads' });
 
 const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
 const app = express();
-app.set('view engine', 'ejs');
+app.use(bodyParser.json());
 app.use(express.static('src/server/uploads'));
+app.set('view engine', 'ejs');
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
-
     if (!user) {
       return res.status(403).send(
         { success: false, message: 'Authentication failed. User not found.' });
@@ -85,8 +89,32 @@ app.get('/auth/facebook/callback', (req, res, next) =>
       }, config.jwt.secretKey)
     }
   }))(req, res, next));
-app.post('/upload', upload.single('photo'), (req, res) => {
-  res.send(req.file);
+
+AWS.config.update({
+  secretAccessKey: 'tmJi4pV4em7bxEAdGLv1vlvH1gV+Bo7qvcD1sTNh',
+  accessKeyId: 'AKIAIJD67AKHPDOBXPCQ'
+});
+
+var s3 = new AWS.S3();
+
+app.post('/upload', upload.single('photo'),  function(req, res){
+  var bodystream = fs.createReadStream( __dirname + './../../uploads/10676328_10204151030168711_4038565941151237645_n.jpg');
+
+  var params = {
+    Bucket: 'pazarnext',
+    Key: 'uploads/images/10676328_10204151030168711_4038565941151237645_n.jpg',
+    Body: bodystream,
+  };
+
+  s3.putObject(params, function (err) {
+    if (err) {
+      console.log("Error uploading data: ", err);
+    } else {
+      console.log("Successfully uploaded data to myBucket");
+      res.send('uploaded');
+
+    }
+  });
 });
 app.use('/*', home);
 app.listen(process.env.PORT || 3030);
