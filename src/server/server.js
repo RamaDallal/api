@@ -16,7 +16,6 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import AWS from 'aws-sdk';
 import bodyParser from 'body-parser';
-import multerS3 from 'multer-s3';
 import fs from 'fs';
 const upload = multer({ dest: 'src/server/uploads' });
 
@@ -96,25 +95,26 @@ AWS.config.update({
   sslEnabled: true
 });
 
-var s3 = new AWS.S3();
+const s3 = new AWS.S3();
 
-app.post('/upload', upload.single('photo'), function(req, res) {
-  var bodystream = fs.createReadStream(__dirname + '/uploads/' + req.file.filename);
-  res.send(req.file);
-  var params = {
+app.post('/upload', upload.single('photo'), (req, res) => {
+  const params = {
     Bucket: 'pazarnext',
-    Key: 'uploads/images/' + req.file.filename,
-    Body: bodystream,
+    Key: `uploads/images/${req.file.filename}`,
+    Body: fs.createReadStream(__dirname + '/uploads/' + req.file.filename),
     ACL: 'public-read',
     ContentType: req.file.mimetype
   };
-
-  s3.putObject(params, function (err) {
+  s3.putObject(params, (err, data) => {
+    fs.unlink(`src/server/uploads/${req.file.filename}`, () => {
+      if (err) throw err;
+    });
     if (err) {
-      console.log("Error uploading data: ", err);
+      console.log('error:', err);
     } else {
-      console.log("Successfully uploaded data to myBucket");
+      console.log('res:', data);
     }
+    res.send(req.file);
   });
 });
 app.use('/*', home);
