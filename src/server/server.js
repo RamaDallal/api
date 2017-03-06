@@ -92,18 +92,21 @@ app.get('/auth/facebook/callback', (req, res, next) =>
 
 AWS.config.update({
   secretAccessKey: 'tmJi4pV4em7bxEAdGLv1vlvH1gV+Bo7qvcD1sTNh',
-  accessKeyId: 'AKIAIJD67AKHPDOBXPCQ'
+  accessKeyId: 'AKIAIJD67AKHPDOBXPCQ',
+  sslEnabled: true
 });
 
 var s3 = new AWS.S3();
 
-app.post('/upload', upload.single('photo'),  function(req, res){
-  var bodystream = fs.createReadStream( __dirname + './../../uploads/10676328_10204151030168711_4038565941151237645_n.jpg');
-
+app.post('/upload', upload.single('photo'), function(req, res) {
+  var bodystream = fs.createReadStream(__dirname + '/uploads/' + req.file.filename);
+  res.send(req.file);
   var params = {
     Bucket: 'pazarnext',
-    Key: 'uploads/images/10676328_10204151030168711_4038565941151237645_n.jpg',
+    Key: 'uploads/images/' + req.file.filename,
     Body: bodystream,
+    ACL: 'public-read',
+    ContentType: req.file.mimetype
   };
 
   s3.putObject(params, function (err) {
@@ -111,8 +114,6 @@ app.post('/upload', upload.single('photo'),  function(req, res){
       console.log("Error uploading data: ", err);
     } else {
       console.log("Successfully uploaded data to myBucket");
-      res.send('uploaded');
-
     }
   });
 });
