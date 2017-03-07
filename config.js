@@ -8,6 +8,7 @@ const environment = {
     frontendHost: process.env.APIHOST || 'localhost',
     frontendPort: 3000,
     isProduction: false,
+    bucket: 'pazarnext',
     facebookAuth: {
       clientID: '246362195777238',
       clientSecret: 'f76c130fe5ebc025d0f059652da4811d',
@@ -24,6 +25,7 @@ const environment = {
     backendHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
     frontendPort: '',
     isProduction: true,
+    bucket: 'pazarnext',
     facebookAuth: {
       clientID: '880494102091189',
       clientSecret: 'a160af2e6e7dc6cb851a4ee07993a431',

@@ -114,7 +114,7 @@ app.post('/upload', upload.single('photo'), (req, res) => {
     } else {
       console.log('res:', data);
     }
-    res.send(req.file);
+    res.send({ amazonUrl:`https://s3.amazonaws.com/${config.bucket}/uploads/images/${req.file.filename}`});
   });
 });
 app.use('/*', home);
