@@ -17,6 +17,8 @@ import multer from 'multer';
 import AWS from 'aws-sdk';
 import bodyParser from 'body-parser';
 import fs from 'fs';
+import waterfall  from 'async-waterfall';
+
 const upload = multer({ dest: 'src/server/uploads' });
 
 const home = (req: Object, res: Object): Object => res.sendStatus(200);
@@ -98,23 +100,26 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 app.post('/upload', upload.single('photo'), (req, res) => {
-  const params = {
-    Bucket: 'pazarnext',
-    Key: `uploads/images/${req.file.filename}`,
-    Body: fs.createReadStream(__dirname + '/uploads/' + req.file.filename),
-    ACL: 'public-read',
-    ContentType: req.file.mimetype
-  };
-  s3.putObject(params, (err, data) => {
-    fs.unlink(`src/server/uploads/${req.file.filename}`, () => {
-      if (err) throw err;
-    });
-    if (err) {
-      console.log('error:', err);
-    } else {
-      console.log('res:', data);
+  waterfall([
+    (callback) => {
+      s3.putObject({
+        Bucket: 'pazarnext',
+        Key: `uploads/images/${req.file.filename}`,
+        Body: fs.createReadStream(__dirname + '/uploads/' + req.file.filename),
+        ACL: 'public-read',
+        ContentType: req.file.mimetype
+      }, (err) => {
+        callback(err)
+      })
+    },
+    (callback) => {
+      fs.unlink(`src/server/uploads/${req.file.filename}`, (err) => {
+        callback(err, `https://s3.amazonaws.com/${config.bucket}/uploads/images/${req.file.filename}`)
+      })
     }
-    res.send({ amazonUrl:`https://s3.amazonaws.com/${config.bucket}/uploads/images/${req.file.filename}`});
+  ], (err, amazonUrl) => {
+    if (err) return res.status(400).send(err);
+    res.send({ amazonUrl });
   });
 });
 app.use('/*', home);
