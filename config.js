@@ -14,6 +14,10 @@ const environment = {
       clientSecret: 'f76c130fe5ebc025d0f059652da4811d',
       callbackURL: 'http://localhost:3030/auth/facebook/callback',
       profileFields: ['id', 'email', 'name']
+    },
+    amazonConfig: {
+      secretAccessKey: 'tmJi4pV4em7bxEAdGLv1vlvH1gV+Bo7qvcD1sTNh',
+      accessKeyId: 'AKIAIJD67AKHPDOBXPCQ'
     }
   },
   production: {
@@ -31,7 +35,10 @@ const environment = {
       clientSecret: 'a160af2e6e7dc6cb851a4ee07993a431',
       callbackURL: 'https://pazar-graphql.herokuapp.com/auth/facebook/callback',
       profileFields: ['id', 'email', 'name']
-
+    },
+    amazonConfig: {
+      secretAccessKey: 'tmJi4pV4em7bxEAdGLv1vlvH1gV+Bo7qvcD1sTNh',
+      accessKeyId: 'AKIAIJD67AKHPDOBXPCQ'
     }
   }
 }[process.env.NODE_ENV || 'development'  ];

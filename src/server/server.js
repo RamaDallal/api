@@ -92,8 +92,8 @@ app.get('/auth/facebook/callback', (req, res, next) =>
   }))(req, res, next));
 
 AWS.config.update({
-  secretAccessKey: 'tmJi4pV4em7bxEAdGLv1vlvH1gV+Bo7qvcD1sTNh',
-  accessKeyId: 'AKIAIJD67AKHPDOBXPCQ',
+  secretAccessKey: config.amazonConfig.secretAccessKey,
+  accessKeyId: config.amazonConfig.accessKeyId,
   sslEnabled: true
 });
 
