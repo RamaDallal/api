@@ -8,7 +8,6 @@ import express from 'express';
 import Schema from './graphql/rootSchema';
 import setupDB from './database/setupDB';
 import config from './../../config';
-const cors = require('cors');
 import User from './graphql/models/user/UserModel';
 import FacebookStrategy from 'passport-facebook';
 import passport from 'passport';
@@ -17,6 +16,7 @@ import multer from 'multer';
 import AWS from 'aws-sdk';
 import fs from 'fs';
 import waterfall from 'async-waterfall';
+import cors  from 'cors';
 
 const upload = multer({ dest: 'src/server/uploads' });
 
@@ -26,11 +26,7 @@ setupDB(config.db);
 const app = express();
 app.use(express.static('src/server/uploads'));
 app.set('view engine', 'ejs');
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(cors());
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
@@ -102,7 +98,7 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-app.post('/upload', upload.single('photo'), (req, res) => {
+app.post('/upload', upload.single('photo'), cors(), (req, res) => {
   waterfall([
     (callback) => {
       s3.putObject({
