@@ -26,6 +26,11 @@ setupDB(config.db);
 const app = express();
 app.use(express.static('src/server/uploads'));
 app.set('view engine', 'ejs');
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 app.use('/api/graphql/confirm', (req, res) => {
   User.update({ _id: req.query.id }, { isAuthenticated: true }, (err, user) => {
     if (err) throw err;
