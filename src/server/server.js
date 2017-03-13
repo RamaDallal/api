@@ -15,7 +15,6 @@ import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import AWS from 'aws-sdk';
-import bodyParser from 'body-parser';
 import fs from 'fs';
 import waterfall from 'async-waterfall';
 
@@ -25,7 +24,6 @@ const home = (req: Object, res: Object): Object => res.sendStatus(200);
 setupDB(config.db);
 
 const app = express();
-app.use(bodyParser.json());
 app.use(express.static('src/server/uploads'));
 app.set('view engine', 'ejs');
 app.use('/api/graphql/confirm', (req, res) => {
