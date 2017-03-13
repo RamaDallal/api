@@ -29,7 +29,7 @@ const environment = {
     backendHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
     frontendPort: '',
     isProduction: true,
-    bucket: 'pazarnextheroku',
+    bucket: 'pazarnext',
     facebookAuth: {
       clientID: '880494102091189',
       clientSecret: 'a160af2e6e7dc6cb851a4ee07993a431',
