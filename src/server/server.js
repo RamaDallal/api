@@ -17,7 +17,7 @@ import multer from 'multer';
 import AWS from 'aws-sdk';
 import bodyParser from 'body-parser';
 import fs from 'fs';
-import waterfall  from 'async-waterfall';
+import waterfall from 'async-waterfall';
 
 const upload = multer({ dest: 'src/server/uploads' });
 
