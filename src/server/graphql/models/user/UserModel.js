@@ -5,20 +5,11 @@ const userSchema = new Schema({
   password: String,
   isAuthenticated: false,
   providerId: String,
-  providerType: String
+  providerType: String,
+  avatar: String,
+  displayName: String
 });
 
-userSchema.pre('save', (next, profile) => {
-  const user = this;
-  mongoose.models['User'].findOne({ email: profile.email }, 'email', (err, results) => {
-    if (results) {
-      user.invalidate('email');
-      next(new Error('User Email must be unique, another one take this email'));
-    } else {
-      next();
-    }
-  });
-});
 const User = mongoose.model('User', userSchema);
 
 export default User;

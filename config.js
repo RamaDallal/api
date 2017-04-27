@@ -7,11 +7,17 @@ const environment = {
     apiPort: 3030,
     frontendHost: process.env.APIHOST || 'localhost',
     frontendPort: 3000,
+    isProduction: false,
+    bucket: 'pazarnext',
     facebookAuth: {
       clientID: '246362195777238',
       clientSecret: 'f76c130fe5ebc025d0f059652da4811d',
       callbackURL: 'http://localhost:3030/auth/facebook/callback',
       profileFields: ['id', 'email', 'name']
+    },
+    amazonConfig: {
+      secretAccessKey: 'tmJi4pV4em7bxEAdGLv1vlvH1gV+Bo7qvcD1sTNh',
+      accessKeyId: 'AKIAIJD67AKHPDOBXPCQ'
     }
   },
   production: {
@@ -19,18 +25,23 @@ const environment = {
     port: process.env.PORT,
     apiHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
     apiPort: '',
-    frontendHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
-    backendHost: process.env.APIHOST || 'pazar-next.herokuapp.com',
+    frontendHost: process.env.APIHOST || 'pazar-next.herokuapp.com',
+    backendHost: process.env.APIHOST || 'pazar-graphql.herokuapp.com',
     frontendPort: '',
+    isProduction: true,
+    bucket: 'pazarnext',
     facebookAuth: {
-      clientID: '246362195777238',
-      clientSecret: 'f76c130fe5ebc025d0f059652da4811d',
+      clientID: '880494102091189',
+      clientSecret: 'a160af2e6e7dc6cb851a4ee07993a431',
       callbackURL: 'https://pazar-graphql.herokuapp.com/auth/facebook/callback',
       profileFields: ['id', 'email', 'name']
-
+    },
+    amazonConfig: {
+      secretAccessKey: 'tmJi4pV4em7bxEAdGLv1vlvH1gV+Bo7qvcD1sTNh',
+      accessKeyId: 'AKIAIJD67AKHPDOBXPCQ'
     }
   }
-}[process.env.NODE_ENV || 'development'];
+}[process.env.NODE_ENV || 'development'  ];
 module.exports = Object.assign({
   db: 'mongodb://noursammour:passnord@ds141118.mlab.com:41118/pazar',
   nodeMailer: {

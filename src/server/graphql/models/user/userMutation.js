@@ -64,8 +64,8 @@ export default {
     resolve: (_, args:Object):Object => new Promise((resolve) => {
       UserModel.findOne({ email: args.email }, (emailError, user) => {
         if (emailError || !user) return resolve({ errors: ['invalid email'] });
-        if (user.isAuthenticated === false)
-          return resolve({ errors: ['please confirm your email'] });
+        if (user.isAuthenticated === false) return resolve({
+          errors: ['please confirm your email'] });
         return bcrypt.compare(args.password, user.password, (passwordError, result) => {
           let res;
           if (!result) {
@@ -94,7 +94,7 @@ export default {
     }),
     args: {
       password: { type: GraphQLString },
-      newPassword: { type: GraphQLString },
+      newPassword: { type: GraphQLString }
     },
     resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
       const token = context.headers.authorization;
@@ -164,7 +164,7 @@ export default {
       const decoded = jwt.decode(args.token, config.jwt.secretKey);
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(args.newPassword, salt);
-      UserModel.findOne({ username: decoded.username }, (err, user) => {
+      UserModel.findOne({ email: decoded.email }, (err, user) => {
         let res;
         if (!user) {
           res = { errors: ['Invalid password'] };
@@ -172,8 +172,41 @@ export default {
           res = { errors: [err] };
         } else {
           UserModel.update({
-            username: decoded.username
+            email: decoded.email
           }, { password: hash }, () => {
+            res = {
+              user
+            };
+            return resolve(res);
+          });
+        }
+      });
+    })
+  },
+  updateProfile: {
+    type: new ObjectType({
+      name: 'AccountSettingResult',
+      fields: {
+        errors: { type: new List(StringType) }
+      }
+    }),
+    args: {
+      displayName: { type: GraphQLString },
+      avatar: { type: GraphQLString }
+    },
+    resolve: (_, args:Object, context:Object):Object => new Promise((resolve) => {
+      const token = context.headers.authorization;
+      const decoded = jwt.decode(token, config.jwt.secretKey);
+      UserModel.findOne({ _id: decoded.id }, (err, user) => {
+        let res;
+        if (!user) {
+          res = { errors: ['Invalid password'] };
+        } else if (err) {
+          res = { errors: [err] };
+        } else {
+          UserModel.update({
+            email: decoded.email
+          }, { displayName: args.displayName, avatar: args.avatar }, () => {
             res = {
               user
             };
@@ -184,3 +217,4 @@ export default {
     })
   }
 };
+
